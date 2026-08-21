@@ -89,7 +89,7 @@ An early normalized overlay accidentally made agreement look tighter than it rea
 
 Preferred corrected figure:
 
-![Corrected Iowa overlay](images/iowa-absolute-overlay.png)
+![Corrected Iowa overlay](Images/iowa-absolute-overlay.png)
 
 The corrected digitization showed the rounded/original project curve generally about **0.5–1.3°F colder** than the plotted Iowa fitted line through much of 10–80%, while agreement became very close around 90%.
 
@@ -182,11 +182,11 @@ The project repeatedly used +14/-45°F as a **working comparison pair** when vis
 
 Full model comparison:
 
-![Full model comparison](images/full-model-comparison.png)
+![Full model comparison](Images/full-model-comparison.png)
 
 Error relative to the interpolated Cenex Southern guideline:
 
-![Model error vs Cenex Southern guideline](images/full-model-error-vs-cenex-southern.png)
+![Model error vs Cenex Southern guideline](Images/full-model-error-vs-cenex-southern.png)
 
 The piecewise hybrid produced the smallest practical-range error among several exploratory models, but it accomplishes that by explicitly using different behavior below and above a chosen transition range.
 
@@ -303,7 +303,7 @@ Average held-out normalized RMSE from the project test:
 | Rational | 0.0415 |
 | Endpoint quartic | 0.0459 |
 
-![Leave-one-evidence-group-out comparison](images/leave-one-evidence-group-out.png)
+![Leave-one-evidence-group-out comparison](Images/leave-one-evidence-group-out.png)
 
 The quartic can fit the combined development set more flexibly, but its poorer held-out performance suggests that the extra degree of freedom was fitting source-specific detail rather than a stable common shape.
 
@@ -328,7 +328,7 @@ and the earlier independently obtained source-balanced cubic:
 
 Two different aggregation approaches therefore converged on nearly the same region of coefficient space.
 
-![Systematic family comparison](images/systematic-family-comparison.png)
+![Systematic family comparison](Images/systematic-family-comparison.png)
 
 ## 10. Counterexamples and domain limits
 
