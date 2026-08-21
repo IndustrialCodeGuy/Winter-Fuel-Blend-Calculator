@@ -436,20 +436,3 @@ F(x) = x(0.348823 + 0.033029x) / (1 - 0.618148x)
 The rational family provided a different curvature shape with only a few parameters, but its leave-one-evidence-group-out result was behind the cubic and Bernstein quartic.
 
 ---
-
-## Naming recommendation for the future model selector
-
-Suggested user-facing names:
-
-- **Old Linear (3°F/10%)**
-- **Cenex Literature Cubic**
-- **Rounded General Cubic**
-- **Original Exact Cubic**
-- **Iowa Graph Curve**
-- **Iowa Graph Points**
-- **Cenex Southern-Guideline Test Cubic**
-- **Hybrid (Research)**
-- **Hybrid-Like Global Cubic**
-- **Systematic Robust Cubic**
-
-Keep localized corrections, minimax, and model-family diagnostics available in documentation rather than cluttering the primary calculator selector unless there is a specific research reason to expose them.
