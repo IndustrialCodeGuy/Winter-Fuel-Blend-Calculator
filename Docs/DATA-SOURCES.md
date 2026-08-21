@@ -300,6 +300,6 @@ That midpoint is warmer than the Minnesota/Iowa-derived general curve would pred
 
 A plain one-link-per-line list is stored at:
 
-[`docs/data/source-links.txt`](data/source-links.txt)
+[`Docs/Data/source-links.txt`](Data/source-links.txt)
 
 That list also contains patents and additional cold-flow/model-background sources investigated during the project. Inclusion in the list does **not** mean a source was used to fit the current cloud-point model.
