@@ -6,7 +6,7 @@ This repository is intentionally more transparent than a typical calculator. The
 
 > **Pre-publication note:** the documentation has been updated ahead of the planned experimental model-selector UI. The current HTML may still use one fixed cloud-point model. The public experimental build is expected to allow switching among selected models later.
 
-![Full model comparison](docs/images/full-model-comparison.png)
+![Full model comparison](Docs/Images/full-model-comparison.png)
 
 ## What the project is trying to answer
 
@@ -28,7 +28,7 @@ This repository therefore separates:
 
 The project started with a simple linear model and then moved to a normalized nonlinear cubic based primarily on Minnesota and Iowa petroleum-diesel data. Later research added Cenex/CHS guidance, two separate fits digitized from the Iowa graph, cold-flow literature, several alternative model families, and a leave-one-evidence-group-out model-selection pass.
 
-The major models are documented in [MODEL-CATALOG.md](docs/MODEL-CATALOG.md).
+The major models are documented in [MODEL-CATALOG.md](Docs/MODEL-CATALOG.md).
 
 Three particularly important reference models are currently:
 
@@ -97,22 +97,22 @@ The later research pass strongly supports these points:
 - Straight #1 can still show some LTFT/pour-point response to an additive, but the benefit is not guaranteed to equal the response of #2-heavy blends.
 - More additive does **not** imply a proportional temperature benefit; multiple sources show diminishing, inconsistent, or sometimes adverse response at higher treatment rates.
 
-See [COLD-FLOW-RESEARCH.md](docs/COLD-FLOW-RESEARCH.md).
+See [COLD-FLOW-RESEARCH.md](Docs/COLD-FLOW-RESEARCH.md).
 
 ## Repository guide
 
-- [Methodology](docs/METHODOLOGY.md) — model-independent calculator math, normalization, and evaluation rules.
-- [Model catalog](docs/MODEL-CATALOG.md) — formulas tried, names used in the project, and why each exists.
-- [Data sources](docs/DATA-SOURCES.md) — measured data, supplier guidance, literature, and counterexamples.
-- [Validation](docs/VALIDATION.md) — measured comparisons, normalized comparisons, model-family testing, and error behavior.
-- [Research history](docs/RESEARCH-HISTORY.md) — how the project evolved and which apparent dead ends were useful.
-- [Cold-flow research](docs/COLD-FLOW-RESEARCH.md) — CFI, CFPP/LTFT/PP, dose response, and neat-#1 behavior.
-- [Learning guide](docs/LEARNING-GUIDE.md) — how to read the curves and understand why the formulas differ.
-- [Limitations and warnings](docs/LIMITATIONS-AND-WARNINGS.md) — intended range, exclusions, safety, and uncertainty.
+- [Methodology](Docs/METHODOLOGY.md) — model-independent calculator math, normalization, and evaluation rules.
+- [Model catalog](Docs/MODEL-CATALOG.md) — formulas tried, names used in the project, and why each exists.
+- [Data sources](Docs/DATA-SOURCES.md) — measured data, supplier guidance, literature, and counterexamples.
+- [Validation](Docs/VALIDATION.md) — measured comparisons, normalized comparisons, model-family testing, and error behavior.
+- [Research history](Docs/RESEARCH-HISTORY.md) — how the project evolved and which apparent dead ends were useful.
+- [Cold-flow research](Docs/COLD-FLOW-RESEARCH.md) — CFI, CFPP/LTFT/PP, dose response, and neat-#1 behavior.
+- [Learning guide](Docs/LEARNING-GUIDE.md) — how to read the curves and understand why the formulas differ.
+- [Limitations and warnings](Docs/LIMITATIONS-AND-WARNINGS.md) — intended range, exclusions, safety, and uncertainty.
 - [Contributing](CONTRIBUTING.md) — how to propose data or model changes without overfitting.
 - [Changelog](CHANGELOG.md) — project/documentation history.
 
-Research CSVs and source links are under [`docs/data/`](docs/data/).
+Research CSVs and source links are under [`Docs/Data/`](Docs/Data/).
 
 ## Quick start
 
