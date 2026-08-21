@@ -1,0 +1,11 @@
+Model,MAE 10–80 (°F),RMSE 10–80 (°F),Max abs error 10–80 (°F)
+Hybrid piecewise,0.726,0.934,1.65
+Hybrid-like global cubic,0.816,0.969,1.696
+New test cubic,1.006,1.136,1.65
+Source-balanced cubic,0.967,1.23,2.407
+Original exact,1.211,1.512,2.697
+Cenex Literature Cubic,1.283,1.514,3.044
+Rounded original,1.262,1.589,2.716
+Iowa graph points,2.202,2.604,4.007
+Iowa graph curve,2.416,2.765,4.268
+Cenex 3°F/10% rule,3.0,4.61,10.0

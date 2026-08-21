@@ -1,0 +1,5 @@
+source,evidence_class,fraction_1,cp2_f,cp1_f,blend_cp_f,normalized_F
+Minnesota,direct measurement,0.5,2,-52,-11,0.240741
+Iowa,direct/published stock blend,0.57,3.2,-53.5,-15,0.320988
+Iowa,direct/published stock blend,0.8,3.2,-53.5,-30,0.585538
+Iowa,direct/published stock blend,0.9,3.2,-53.5,-40,0.761905

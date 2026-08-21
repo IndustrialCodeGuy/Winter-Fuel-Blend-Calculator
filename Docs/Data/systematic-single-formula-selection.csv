@@ -1,0 +1,5 @@
+Model,Formula / parameters,Average leave-one-evidence-group-out RMSE (normalized F)
+Systematic robust cubic,0.583960x - 0.675308x² + 1.091348x³,0.0347
+Endpoint quartic,0.691190x - 1.273143x² + 2.086208x³ - 0.504255x⁴,0.0459
+Monotonic Bernstein quartic,"controls: 0, 0.157290, 0.157290, 0.389741, 1",0.0392
+Simple rational,x(0.348823 + 0.033029x)/(1 - 0.618148x),0.0415
