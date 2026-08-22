@@ -2,15 +2,15 @@ name,family,formula_or_definition,status
 Old linear / original calculator,linear,F(x)=x,historical baseline
 Cenex three-anchor quadratic,quadratic,CP=14 - 6x - 48x^2,historical Cenex-literature endpoint experiment
 Cenex literature-constrained cubic,cubic,CP=14 - 30x - (CP1 + 16)x^2 + 2(CP1 + 16)x^3,Cenex-literature model/reference
-Rounded original / rounded general cubic,cubic,0.6x - 0.8x^2 + 1.2x^3,general/research baseline
-Original exact cubic,cubic,0.59136x - 0.75721x^2 + 1.16585x^3,precise original fit
-Iowa graph curve,cubic,0.4510x - 0.5719x^2 + 1.1210x^3,digitized Iowa fitted-line diagnostic
-Iowa graph points,cubic,0.5719x - 0.9072x^2 + 1.3353x^3,digitized Iowa plotted-points diagnostic
+Rounded original / rounded general cubic,cubic,0.6x - 0.8x^2 + 1.2x^3,preferred general petroleum model / rounded measured-data fit
+Original exact cubic,cubic,0.59136x - 0.75721x^2 + 1.16585x^3,direct Minnesota/Iowa measured-data reference
+Iowa PDF constrained fitted-line cubic,cubic,0.484285x - 0.606821x^2 + 1.122537x^3,endpoint-constrained project fit to direct PDF vector fitted line
+Iowa PDF constrained plotted-points cubic,cubic,0.536995x - 0.731212x^2 + 1.194217x^3,endpoint-constrained project fit to direct PDF vector plotted points
 New test cubic / Cenex Southern-guideline test fit,cubic,0.8300x - 1.3109x^2 + 1.4809x^3,supplier-oriented diagnostic
 Balanced / minimax cubic,cubic,0.76285x - 1.06934x^2 + 1.30650x^3,Cenex Southern-guideline error-balancing diagnostic
 Source-balanced cubic (early),cubic,0.5983x - 0.7094x^2 + 1.1111x^3,early equal-source aggregation
 Hybrid-like global cubic,cubic,0.67868x - 0.86630x^2 + 1.18762x^3,single-formula approximation to hybrid
-Systematic source-balanced cubic,cubic,0.583960x - 0.675308x^2 + 1.091348x^3,leading single-formula research candidate
+Systematic source-balanced cubic,cubic,0.583960x - 0.675308x^2 + 1.091348x^3,systematic evidence-group compromise / family-test winner
 Endpoint quartic,quartic,0.691190x - 1.273143x^2 + 2.086208x^3 - 0.504255x^4,systematic family test
 Monotonic Bernstein quartic,Bernstein quartic,"controls [0,0.157290,0.157290,0.389741,1]",systematic family test
 Simple rational,rational,x(0.348823 + 0.033029x)/(1 - 0.618148x),systematic family test
