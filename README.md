@@ -130,7 +130,7 @@ Research CSVs and source links are under [`Docs/Data/`](Docs/Data/).
 No build system is required for the current browser calculator.
 
 1. Download or clone the repository.
-2. Open `winter-fuel-blend-calculator.html` in a modern browser.
+2. Open `Winter-Fuel-Blend-Calculator.html` in a modern browser.
 3. Enter current gallons and tank capacity.
 4. Set the current and target #1/#2 ratios.
 5. Use actual supplier/test cloud-point values in Advanced settings when available.
