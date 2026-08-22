@@ -6,7 +6,9 @@ This repository is intentionally more transparent than a typical calculator. The
 
 > **Pre-publication note:** the documentation has been updated ahead of the planned experimental model-selector UI. The current HTML may still use one fixed cloud-point model. The public experimental build is expected to allow switching among selected models later.
 
-![Full model comparison](Docs/Images/full-model-comparison.png)
+![Evidence-first normalized model comparison](Docs/Images/evidence-first-normalized-comparison.png)
+
+The primary research figure is intentionally **evidence-first**: direct Minnesota/Iowa measurements are shown separately from the **source-native Iowa PDF fitted line**, its endpoint-constrained project interpretation, and Cenex/CHS supplier guidance. The broader model-history comparison remains in the validation documentation.
 
 ## What the project is trying to answer
 
@@ -26,20 +28,29 @@ This repository therefore separates:
 
 ## Current model status
 
-The project started with a simple linear model and then moved to a normalized nonlinear cubic based primarily on Minnesota and Iowa petroleum-diesel data. Later research added Cenex/CHS guidance, two separate fits digitized from the Iowa graph, cold-flow literature, several alternative model families, and a leave-one-evidence-group-out model-selection pass.
+The project started with a simple linear model and then moved to a normalized nonlinear cubic based primarily on Minnesota and Iowa petroleum-diesel data. Later research added Cenex/CHS guidance, direct vector extraction of the original Iowa PDF figure, endpoint-constrained project fits to that source-native curve and its plotted points, cold-flow literature, several alternative model families, and a leave-one-evidence-group-out model-selection pass.
 
 The major models are documented in [MODEL-CATALOG.md](Docs/MODEL-CATALOG.md).
 
-Three particularly important reference models are currently:
+Four particularly important reference models are currently:
 
-### Rounded general cubic
+### Rounded general cubic — preferred general petroleum model
 
 ```text
 F(x) = 0.6x - 0.8x² + 1.2x³
 CP = CP₂ + (CP₁ - CP₂) × F(x)
 ```
 
-This remains the cleanest **general/research baseline**. It is easy to audit and closely follows the original Minnesota/Iowa-derived exact fit.
+This is the project's **preferred general petroleum model**. It is a deliberately rounded version of the direct Minnesota/Iowa measured-point fit, remains extremely close to those measurements, is monotonic, has simple auditable coefficients, and has the exact midpoint property `F(0.5) = 0.25`.
+
+### Original exact cubic — measured-data reference
+
+```text
+F(x) = 0.59136x - 0.75721x² + 1.16585x³
+CP = CP₂ + (CP₁ - CP₂) × F(x)
+```
+
+This is the precise normalized cubic fit to the direct Minnesota/Iowa measurement set used by the project. It is retained as the measured-data reference against which the rounded formula is judged.
 
 ### Cenex Literature Cubic
 
@@ -56,9 +67,9 @@ F(x) = 0.583960x - 0.675308x² + 1.091348x³
 CP = CP₂ + (CP₁ - CP₂) × F(x)
 ```
 
-This was produced in the later systematic model-family pass using comparable fitting-evidence-group influence, robust loss so that one unusual chart point could not dominate the solution, exact endpoint constraints, monotonicity, and leave-one-evidence-group-out testing. Among the tested single-formula families, the endpoint-constrained cubic generalized best.
+This was produced in the later systematic model-family pass using comparable fitting-evidence-group influence, robust loss so that one unusual chart point could not dominate the solution, exact endpoint constraints, monotonicity, and leave-one-evidence-group-out testing. Among the tested mathematical families, the endpoint-constrained cubic generalized best **for that source/evidence-group compromise objective**.
 
-This should be viewed as a **leading single-formula candidate**, not as a published industry equation.
+It is retained as the project's **systematic evidence-group compromise model**, not as the preferred general petroleum model. The systematic pass intentionally gave comparable influence to four historical fitting groups, including two Cenex-derived groups; that is a different question from fitting the highest-ranked direct Minnesota/Iowa measurements.
 
 ## Why multiple models?
 
@@ -67,7 +78,7 @@ The experimental calculator is intended to be useful for learning as well as pla
 - how the old 3°F-per-10% linear assumption behaves;
 - how the endpoint-aware **Cenex Literature Cubic** preserves the published Cenex low-range rule and 50/50 anchor while reaching a realistic entered #1 endpoint;
 - how the Minnesota/Iowa-derived curve differs from supplier guidance;
-- why the Iowa graph-derived fits are somewhat warmer through the midrange;
+- why the source-native Iowa PDF regression is not endpoint constrained, and how the endpoint-constrained Iowa project fits compare with the rounded model;
 - why the Cenex Southern-guideline-oriented test fit is more aggressive around 30–50% #1;
 - what a piecewise hybrid gains and what it costs in methodological simplicity; and
 - why more flexible quartic/spline models can fit a chart better without necessarily generalizing better.

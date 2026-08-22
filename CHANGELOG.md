@@ -2,7 +2,7 @@
 
 All notable project changes are documented here.
 
-## Unreleased — research/documentation expansion (2026-08-19)
+## Unreleased — research/documentation expansion (2026-08-22)
 
 ### Repository direction
 
@@ -12,15 +12,28 @@ All notable project changes are documented here.
 
 ### Cloud-point research
 
+- Replaced the screenshot-based Iowa full-curve trace as the preferred representation with a **direct vector extraction from the original Iowa PDF**.
+- Confirmed from the source PDF that Iowa's displayed fitted regression is **not endpoint constrained**: it extends to about +4.58°F at 0% #1 and -56.47°F at 100% #1 versus the measured +3.2/-53.5°F neat-fuel values.
+- Added source-native Iowa vector-path and plotted-marker CSVs, plus a 5%-increment Rounded General comparison.
+- Refit the Iowa graph diagnostics directly from the PDF vector objects: fitted-line constrained cubic `0.484285x - 0.606821x² + 1.122537x³` and plotted-points constrained cubic `0.536995x - 0.731212x² + 1.194217x³`.
+- Clarified that the systematic/LOO model-family pass used Iowa's explicit published stock-blend evidence rather than the screenshot-derived Iowa graph equations, so its coefficients and historical family ranking are unchanged by the PDF re-extraction.
+- Changed the repository's working model-history comparison endpoint pair from **+14/-45°F to +14/-50°F**; the -50°F value is documented as a project comparison compromise rather than a supplier specification or calculator-default change.
+- Regenerated the Iowa overlay, evidence-first normalized chart, full model-history chart, and Cenex-guideline error chart using the revised Iowa definitions and +14/-50°F working comparison pair.
+
+- Clarified the current model hierarchy: **Rounded General** is the preferred general petroleum model, **Original Exact** is the direct Minnesota/Iowa measured-data reference, and **Systematic Robust** is a balanced historical evidence-group compromise rather than the default general model.
+- Added direct measured-point RMSE/MAE comparisons showing Original Exact (~0.54°F RMSE), Rounded General (~0.56°F), and Systematic Robust (~0.68°F) across the retained Minnesota/Iowa points.
+- Added an evidence-first normalized comparison chart and CSV that visually separates direct measurements, Iowa plotted-curve evidence, project models, and Cenex Southern supplier guidance.
+- Added an explicit warning that `full-model-comparison.png` is a model-history/supplier-guideline comparison, not an evidence-quality ranking; the current chart uses +14/-50°F project working endpoints while the Cenex Southern guideline reaches approximately -40°F.
+- Clarified that leave-one-evidence-group-out results select a mathematical family for the balanced fitting objective and do not override the project's evidence hierarchy.
 - Restored the earliest endpoint-aware Cenex-literature formulas that led the project toward nonlinear modeling: the three-anchor quadratic and the constrained/generalized cubic.
 - Documented the constrained cubic as a possible future **Cenex Literature Model** that follows Cenex literature assumptions rather than the Minnesota/Iowa real-world test curve.
 - Normalized Cenex/Agtegra provenance wording: the Southern Region chart is treated as Cenex/CHS guidance hosted by Agtegra, not as an independent Agtegra data family.
 - Clarified the distinction between independent **source provenance families** and the four **fitting evidence groups** used in the later systematic numerical pass.
 - Added the generalized **Cenex Literature Cubic** to the full model-comparison CSV/chart and Cenex Southern-guideline error summary.
 - Regenerated affected charts with Cenex Southern Region attribution and leave-one-evidence-group-out terminology.
-- Corrected repository chart paths to match the actual `docs/images/` layout.
+- Corrected repository chart paths to match the actual `Docs/Images/` layout.
 - Retained the rounded general cubic and original exact cubic as core baseline models.
-- Added two Iowa graph-derived cubic models: one from the displayed fitted line and one from digitized plotted points.
+- Preserved the earlier screenshot-derived Iowa fitted-line and plotted-points cubics in research history, while replacing them in current comparisons with direct-PDF vector-derived constrained fits.
 - Added Cenex Southern-guideline-oriented test cubic.
 - Documented piecewise hybrid, hybrid-like global cubic, minimax, localized corrections, and monotonic spline experiments.
 - Added early source-balanced cubic.
@@ -43,7 +56,9 @@ All notable project changes are documented here.
 ### Iowa graph correction
 
 - Recorded that an early normalized Iowa overlay made agreement appear too tight because traced endpoints were normalized to themselves.
-- Retained the corrected absolute-temperature digitization as the preferred Iowa full-curve comparison.
+- Recorded the intermediate absolute-temperature screenshot correction for research history.
+- Superseded screenshot digitization with direct vector extraction from the original Iowa PDF as the preferred source representation.
+- Preserved the distinction between the raw, non-endpoint-constrained Iowa regression and the project's endpoint-constrained normalized Iowa comparison models.
 
 ### Cold-flow research
 
@@ -56,12 +71,12 @@ All notable project changes are documented here.
 
 ### New documentation
 
-- Added `docs/MODEL-CATALOG.md`.
-- Added `docs/RESEARCH-HISTORY.md`.
-- Added `docs/COLD-FLOW-RESEARCH.md`.
-- Added `docs/LEARNING-GUIDE.md`.
+- Added `Docs/MODEL-CATALOG.md`.
+- Added `Docs/RESEARCH-HISTORY.md`.
+- Added `Docs/COLD-FLOW-RESEARCH.md`.
+- Added `Docs/LEARNING-GUIDE.md`.
 - Expanded `METHODOLOGY`, `DATA-SOURCES`, `VALIDATION`, and `LIMITATIONS-AND-WARNINGS`.
-- Added research charts and CSV data under `docs/images/` and `docs/data/`.
+- Added research charts and CSV data under `Docs/Images/` and `Docs/Data/`.
 
 ## Pre-publication baseline
 
