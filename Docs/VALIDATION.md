@@ -64,7 +64,7 @@ CP(0.5) = 14 + (-69 × 0.25)
 
 This exact quarter-span midpoint is a convenient interpretation of the rounded model and one reason it remains useful as a simple research baseline.
 
-## 2. Iowa explicit petroleum points
+## 2. Iowa reported stock-blend points
 
 Iowa endpoints:
 
