@@ -98,15 +98,17 @@ For example, with #2 fixed at +14°F:
 
 ```text
 +14 to -55 = 69°F span
-+14 to -45 = 59°F span
++14 to -50 = 64°F span
 +14 to -40 = 54°F span
 ```
 
 A normalized difference of `0.01` therefore corresponds to:
 
 - 0.69°F on a 69°F span;
-- 0.59°F on a 59°F span; or
+- 0.64°F on a 64°F span; or
 - 0.54°F on a 54°F span.
+
+For repository **model-comparison temperature charts**, the project now uses **+14°F #2 / -50°F #1** as a working pair. The -50°F value is a project comparison choice between the roughly -40°F southern Cenex guidance and the approximately -52 to -53.5°F Minnesota/Iowa measured #1 values. It is not presented as a supplier specification, and it does not change the calculator's separately documented/default endpoint settings.
 
 An additional cross-source observation reinforces why normalization is useful:
 
@@ -138,9 +140,14 @@ These receive the highest weight when evaluating general blend shape.
 
 ### B. Published plotted curves
 
-The Iowa report contains a full plotted petroleum #1/#2 curve. Project formulas were independently derived from both the plotted regression line and visually digitized plotted points.
+The Iowa report contains a full plotted petroleum #1/#2 curve. The original project work used a raster screenshot of that figure. A later source-native review found that the original PDF stores both the fitted line and plotted markers as vector objects.
 
-These are useful, but digitization uncertainty must be retained.
+The repository now treats the **direct PDF vector extraction** as the preferred graph-derived representation. It preserves two distinct things:
+
+- the source-native fitted regression line, which is **not endpoint constrained**; and
+- project-developed endpoint-constrained fits to the extracted regression line and plotted markers for normalized model comparison.
+
+The endpoint-constrained project fits are analysis transformations, not equations published by Iowa Central.
 
 ### C. Supplier guidance and specifications
 
@@ -177,7 +184,20 @@ The Cenex/CHS material includes both the general 3°F-per-10% / endpoint guidanc
 
 Historically, the later systematic numerical pass split the Cenex material into two **fitting evidence groups** because they constrain different features of the curve: the general rule/endpoints constrain low-range rate and normalization, while the Southern Region chart supplies a full-range supplier-guidance shape. That produced four fitting groups (Minnesota, Iowa, Cenex general guidance, and Cenex Southern guidance), but only three independent provenance families.
 
-For that reason, this repository now describes the systematic test as using comparable **evidence-group influence** and **leave-one-evidence-group-out** validation rather than implying four independent source families. The two Iowa graph-derived formulas remain cross-checks rather than additional independent publications.
+For that reason, this repository now describes the systematic test as using comparable **evidence-group influence** and **leave-one-evidence-group-out** validation rather than implying four independent source families. The Iowa PDF graph-derived formulas remain cross-checks rather than additional independent publications. Importantly, the Iowa fitting group used in the later systematic/leave-one-evidence-group-out pass was based on the explicit published stock-blend evidence, **not** the screenshot-derived Iowa fitted-line equation. Replacing the screenshot trace with the direct-PDF vector extraction therefore does not change the systematic cubic coefficients or its historical LOO ranking.
+
+### Evidence hierarchy is not the same as fitting-group balance
+
+The systematic pass deliberately asked a narrow research question: *if the historical evidence groups are given comparable influence, which simple mathematical family best compromises among them?* That is useful for model-family selection, but it does **not** override the evidence hierarchy above.
+
+For selection of a **general petroleum #1/#2 cloud-point model**, the project now interprets the evidence in this order:
+
+1. direct Minnesota/Iowa measured blend points;
+2. the Iowa plotted curve as secondary shape evidence, with digitization uncertainty retained;
+3. Cenex/CHS supplier guidance as an operational/supplier cross-check; and
+4. project-developed supplier-oriented fits as diagnostics.
+
+Under that interpretation, the original exact cubic is essentially the direct measured-point fit, and the rounded general cubic is its deliberately simplified production/research form. The systematic robust cubic remains valuable as a balanced historical-evidence experiment rather than superseding the measured-data family.
 
 ## 7. Robust fitting
 
@@ -198,7 +218,9 @@ The systematic single-formula pass compared:
 
 Every candidate preserved endpoints and was checked for monotonicity.
 
-The endpoint-constrained cubic had the best average **leave-one-evidence-group-out** error among those tested. The more flexible quartic could fit the combined development data more closely but generalized worse when an entire fitting evidence group was withheld.
+The endpoint-constrained cubic had the best average **leave-one-evidence-group-out** error among those tested for the comparable-evidence-group objective. The more flexible quartic could fit the combined development data more closely but generalized worse when an entire fitting evidence group was withheld.
+
+This result selects a mathematical family for that systematic compromise exercise; it is not, by itself, a ranking of which evidence source should control the general petroleum model.
 
 See [VALIDATION.md](VALIDATION.md) and [MODEL-CATALOG.md](MODEL-CATALOG.md).
 

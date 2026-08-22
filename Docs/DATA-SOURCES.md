@@ -60,14 +60,38 @@ Normalized values using +3.2/-53.5°F endpoints:
 90% -> F ≈ 0.76190
 ```
 
-### Iowa graph-derived project fits
+### Iowa PDF vector extraction and project fits
 
-The project later digitized the published graph in two different ways:
+The first project pass digitized a raster screenshot of Figure 1. A later review of the original PDF found that the graph is stored as vector content, allowing the fitted line and plotted data markers to be extracted directly from the source page rather than selected from pixels.
 
-- a fit to the **displayed fitted curve**;
-- a fit to the **displayed plotted points**.
+The source-native fitted regression is **not endpoint constrained**. Direct vector extraction gives approximate fitted-line endpoint values of:
 
-Those project-derived equations are documented in [MODEL-CATALOG.md](MODEL-CATALOG.md). They are not equations published by Iowa Central.
+```text
+0% #1   ≈ +4.58°F
+100% #1 ≈ -56.47°F
+```
+
+while the report's measured neat-fuel values are +3.2°F and -53.5°F. The difference is a property of the displayed regression, not a change in the measured endpoints.
+
+For reproducibility, the repository now retains:
+
+- [`Data/iowa-pdf-vector-fitted-line.csv`](Data/iowa-pdf-vector-fitted-line.csv) — the extracted vector path;
+- [`Data/iowa-pdf-vector-plotted-points.csv`](Data/iowa-pdf-vector-plotted-points.csv) — centers of the plotted vector markers; and
+- [`Data/iowa-pdf-rounded-comparison.csv`](Data/iowa-pdf-rounded-comparison.csv) — regular 5% comparison against the Rounded General model.
+
+A fourth-order polynomial is an extremely close **project reconstruction** of the displayed source line:
+
+```text
+CP ≈ 4.57014
+     - 26.54218x
+     - 17.18273x²
+     + 59.33636x³
+     - 76.63960x⁴
+```
+
+It reproduces the extracted PDF vector path to roughly 0.01°F RMSE, but it is **not an equation published by Iowa Central**.
+
+For apples-to-apples comparison with the project's endpoint-constrained normalized models, the repository also fits constrained cubics to the direct-PDF line and plotted markers. Those equations are documented in [MODEL-CATALOG.md](MODEL-CATALOG.md) and are explicitly labeled as project interpretations.
 
 ### Important high-cloud #2 limitation
 

@@ -127,21 +127,37 @@ F(x) = 0.6x - 0.8x² + 1.2x³
 
 The rounded formula became the practical baseline because the difference from the exact fit was only a few tenths of a degree over realistic endpoint spans.
 
-## Stage 5 — Iowa full-curve validation and a correction
+## Stage 5 — Iowa full-curve validation, screenshot correction, and source-native PDF extraction
 
-The published Iowa graph was digitized to compare the complete curve shape, not only the explicit 57/80/90% points.
+The published Iowa graph was first digitized from a raster screenshot to compare the complete curve shape, not only the explicit 57/80/90% stock-blend points.
 
-An early overlay normalized the traced fitted curve by its own traced endpoints. That made the agreement look artificially tight.
+The first overlay normalized the traced fitted curve by its own traced endpoints. That made agreement look artificially tight. A second pass corrected that problem by calibrating the screenshot's temperature axis and comparing in **absolute temperature** against the formula using Iowa's known +3.2/-53.5°F measured endpoints.
 
-The comparison was then corrected by calibrating the graph's temperature axis and evaluating the project formula using Iowa's known +3.2/-53.5°F endpoints.
+A later source review improved the process again: the original Iowa PDF stores the plotted regression and data markers as **vector objects**. The project therefore replaced screenshot pixel selection with direct source-PDF vector extraction.
 
-Corrected conclusion:
+That final/source-native pass established that the displayed Iowa regression itself is **not endpoint constrained**:
 
-- the project curve was generally around 0.5–1.3°F colder than the displayed Iowa fitted line through much of 10–80%;
-- agreement remained strong overall; and
-- the corrected result was more honest than the first normalized overlay.
+```text
+displayed regression near 0% #1   ≈ +4.58°F
+measured #2 endpoint              = +3.2°F
 
-This correction is retained in the repository because methodological transparency is more useful than an artificially impressive graph.
+displayed regression near 100% #1 ≈ -56.47°F
+measured #1 endpoint              = -53.5°F
+```
+
+Using the source-native line, the Rounded General model evaluated with Iowa's measured endpoints is approximately **0.5–1.3°F colder through most of the 20–80% range**, reaches about **1.5–1.6°F colder around 5–15%**, and becomes essentially coincident near 90%.
+
+On a 5% grid from 10–80%, the Rounded General vs. source-native Iowa fitted-line comparison is approximately:
+
+```text
+RMSE ≈ 1.05°F
+MAE  ≈ 0.99°F
+maximum absolute difference ≈ 1.60°F
+```
+
+The raw regression endpoint overshoot is now preserved rather than silently forced away. For normalized apples-to-apples model comparisons, separate endpoint-constrained project fits are derived from the direct-PDF line and markers.
+
+This three-step history is retained because it shows why **source-native extraction, absolute calibration, and endpoint constraints are different methodological choices**.
 
 ## Stage 6 — Cenex/CHS research
 
@@ -199,22 +215,35 @@ F(x) = 0.67868x - 0.86630x² + 1.18762x³
 
 This “hybrid-like global cubic” became a strong public-facing single-formula candidate, especially before the later evidence-group pass.
 
-## Stage 10 — separate Iowa graph-derived formulas
+## Stage 10 — Iowa graph-derived formulas, later superseded by direct-PDF fits
 
-The Iowa graph was revisited more directly and two cubics were produced:
+The Iowa graph was originally revisited from the screenshot and two endpoint-constrained project cubics were produced:
 
 ```text
-Iowa graph fitted-line model:
+historical screenshot fitted-line model:
 F(x) = 0.4510x - 0.5719x² + 1.1210x³
 
-Iowa plotted-points model:
+historical screenshot plotted-points model:
 F(x) = 0.5719x - 0.9072x² + 1.3353x³
 ```
 
-These reinforced an important pattern:
+After the source-native PDF vector extraction, those screenshot-derived diagnostics were superseded by:
 
-- Iowa graph-derived shapes were generally warmer / shallower;
-- the original exact cubic sat between them and the more aggressive Cenex Southern-guideline-oriented shapes.
+```text
+direct-PDF fitted-line constrained cubic:
+F(x) = 0.484285x - 0.606821x² + 1.122537x³
+
+direct-PDF plotted-points constrained cubic:
+F(x) = 0.536995x - 0.731212x² + 1.194217x³
+```
+
+The source-native regression itself is retained separately in absolute temperature and is not forced to pass through the measured neat-fuel endpoints.
+
+The revised PDF-derived shapes reinforce the earlier qualitative result:
+
+- the Iowa regression/endpoint-constrained interpretations are generally warmer / shallower than the Rounded General curve through the middle;
+- the difference is modest; and
+- the original/rounded family remains less aggressive than several Cenex Southern-guideline-oriented experimental formulas.
 
 This reduced confidence that the most aggressive Cenex-only cubic should become the universal model.
 
@@ -241,7 +270,9 @@ The final major research step so far froze the major fitting evidence groups and
 
 The fit used comparable evidence-group influence, monotonicity, endpoint constraints, robust handling of isolated supplier-chart anomalies, and leave-one-evidence-group-out evaluation. The four fitting groups were Minnesota, Iowa, Cenex general guidance, and Cenex Southern guidance; the two Cenex groups are not independent provenance families.
 
-The leading cubic was:
+The **Iowa fitting group in this systematic pass used the explicit published stock-blend evidence, not either screenshot-derived Iowa graph equation**. The later replacement of the screenshot digitization with direct-PDF vector extraction therefore does not alter the reported systematic coefficients or LOO family ranking.
+
+The leading cubic **for that comparable-evidence-group exercise** was:
 
 ```text
 F(x) = 0.583960x - 0.675308x² + 1.091348x³
@@ -258,13 +289,17 @@ Quartic            0.0459
 
 The more flexible families fit the development data more closely in places but did not predict withheld fitting evidence groups as well.
 
+A later review clarified the scope of this result. The systematic pass used four fitting groups—Minnesota, Iowa, Cenex general guidance, and Cenex Southern guidance—even though the two Cenex groups belong to one supplier provenance family. That was appropriate for testing a balanced historical-evidence objective, but it should not be read as overriding the project's evidence hierarchy, which gives direct Minnesota/Iowa measurements the highest weight for general blend shape.
+
 ## Stage 13 — current research interpretation
 
 The project now has enough evidence to separate three ideas:
 
-### General baseline
+### Preferred general petroleum model
 
-The rounded/original cubic family remains a strong, easy-to-explain representation of ordinary Upper Midwest petroleum #1/#2 behavior.
+The **Rounded General Cubic** is now the preferred general petroleum model. Its unrounded predecessor is essentially the direct normalized fit to the Minnesota/Iowa measured-point set, and rounding changes the four-point RMSE only from about 0.54°F to 0.56°F while producing simple coefficients and the exact `F(0.5)=0.25` property.
+
+The **Original Exact Cubic** is retained as the measured-data reference.
 
 ### Cenex literature-constrained reference
 
@@ -274,9 +309,9 @@ The early constrained/generalized cubic remains a useful alternate model when th
 
 The piecewise hybrid remains a strong practical Cenex Southern-guideline compromise, especially around 30–50%, but is less elegant as a public single equation.
 
-### Leading single-formula research candidate
+### Systematic evidence-group compromise
 
-The systematic robust/source-balanced cubic currently has the strongest methodological argument among the tested single-formula families.
+The systematic robust/source-balanced cubic remains the strongest result **within the later comparable-evidence-group family-selection exercise**. It is retained as a valuable research compromise, not as a replacement for the measured-data family when the goal is general petroleum blend behavior.
 
 No model is presented as a universal physical law.
 

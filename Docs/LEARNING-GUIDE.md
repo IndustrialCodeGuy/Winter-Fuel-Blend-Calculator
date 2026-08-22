@@ -15,8 +15,8 @@ Example:
 
 ```text
 CP₂ = +14°F
-CP₁ = -45°F
-span = 59°F
+CP₁ = -50°F
+span = 64°F
 ```
 
 If a model gives:
@@ -25,12 +25,14 @@ If a model gives:
 F(0.50) = 0.25
 ```
 
-then the 50/50 blend is one-quarter of the way through the 59°F endpoint drop:
+then the 50/50 blend is one-quarter of the way through the 64°F endpoint drop:
 
 ```text
-CP = 14 - 59 × 0.25
-   = -0.75°F
+CP = 14 - 64 × 0.25
+   = -2.0°F
 ```
+
+The +14/-50°F pair is the repository's current **working comparison pair** for model-history temperature charts. It is not claimed as one supplier's exact fuel pair.
 
 A 50/50 **volume blend does not have to be the temperature midpoint**.
 
@@ -125,15 +127,18 @@ This is why many independent formulas cluster around a similar error at 90%.
 
 That agreement among the formulas is information: it suggests the 90% supplier-graphic point should not automatically receive enough leverage to reshape the whole model.
 
-## 8. What the Iowa graph-derived formulas teach us
+## 8. What the Iowa PDF curve teaches us
 
-The two Iowa-derived graph formulas are generally warmer through the middle than the original project model.
+The source-native Iowa fitted line is now extracted directly from the original PDF vector path. That line is **not endpoint constrained**: it visually/regressively extends to about +4.6°F at 0% #1 and about -56.5°F at 100% #1, while the measured neat-fuel values in the report are +3.2°F and -53.5°F.
 
-The Cenex Southern-guideline-oriented formulas are generally colder through parts of the middle.
+That distinction gives two useful comparisons:
 
-The original cubic family sits between those sources surprisingly often.
+- in **absolute temperature**, compare the rounded model using the measured Iowa endpoints against Iowa's actual displayed regression line;
+- in **normalized shape**, compare endpoint-constrained project fits derived from the PDF vector line/markers against other endpoint-constrained models.
 
-That is a stronger argument for a cross-evidence model than simply asking which equation has the smallest error against one chart.
+The direct-PDF endpoint-constrained fitted-line cubic remains somewhat warmer/shallower than the Rounded General cubic through the middle, but the difference is modest: roughly 0.2–1.2°F over 10–90% when both use the Iowa +3.2/-53.5°F endpoints.
+
+The Cenex Southern-guideline-oriented formulas are generally colder through parts of the middle. The original/rounded cubic family therefore still occupies a useful middle ground between the Iowa source shape and the more aggressive supplier-guidance shapes.
 
 ## 9. Why a piecewise hybrid can be numerically excellent but harder to trust
 

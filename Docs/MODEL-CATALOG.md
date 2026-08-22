@@ -20,10 +20,10 @@ The formulas below are **project-developed analysis models** unless they are exp
 | Cenex Southern Region guideline (Agtegra-hosted) | point/graphic reference | external supplier-guidance reference |
 | Cenex three-anchor quadratic | quadratic | first endpoint-aware Cenex-literature experiment; historical reference |
 | Cenex literature-constrained cubic | cubic | Cenex-literature model/reference; preserves rule, 50/50 anchor, and entered #1 endpoint |
-| Rounded original / rounded general cubic | cubic | general/research baseline |
-| Original exact cubic | cubic | precise predecessor to rounded baseline |
-| Iowa graph curve | cubic | derived from digitized Iowa fitted line |
-| Iowa graph points | cubic | derived from digitized Iowa plotted points |
+| Rounded original / rounded general cubic | cubic | preferred general petroleum model; rounded measured-data fit |
+| Original exact cubic | cubic | direct Minnesota/Iowa measured-data reference |
+| Iowa PDF constrained fitted-line cubic | cubic | endpoint-constrained project fit to the direct PDF vector fitted line |
+| Iowa PDF constrained plotted-points cubic | cubic | endpoint-constrained project fit to the direct PDF vector plotted markers |
 | New test cubic / Cenex Southern-guideline test fit | cubic | more aggressive midrange diagnostic |
 | Piecewise hybrid / production hybrid | piecewise cubic | strong practical compromise; less elegant to explain externally |
 | Balanced/minimax cubic | cubic | equalizes Cenex Southern-guideline errors; diagnostic |
@@ -33,7 +33,7 @@ The formulas below are **project-developed analysis models** unless they are exp
 | Production spline | spline | restrained spline comparison |
 | Source-balanced cubic (early) | cubic | first source-balanced aggregation |
 | Hybrid-like global cubic | cubic | one-formula approximation to hybrid behavior |
-| Systematic source-balanced cubic | cubic | leading single-formula research candidate |
+| Systematic source-balanced cubic | cubic | systematic evidence-group compromise; family-test winner |
 | Endpoint quartic | quartic | systematic family test |
 | Monotonic Bernstein quartic | quartic | systematic family test |
 | Simple rational | rational | systematic family test |
@@ -182,8 +182,9 @@ Why it matters:
 - exact endpoints;
 - monotonic;
 - `F(0.5) = 0.25` exactly;
-- tracks the original exact fit to within only a few tenths of a degree on practical endpoint spans;
-- remains the simplest general/research baseline.
+- tracks the original exact Minnesota/Iowa measured-point fit to within only a few tenths of a degree on practical endpoint spans;
+- has only about 0.56°F RMSE across the four direct Minnesota/Iowa points used by the project; and
+- is the project's preferred general petroleum model because it preserves the measured-data shape with simpler, easier-to-audit coefficients.
 
 ---
 
@@ -193,37 +194,68 @@ Why it matters:
 F(x) = 0.59136x - 0.75721x² + 1.16585x³
 ```
 
-This came from the original normalized Minnesota/Iowa point fit before coefficient rounding.
+This came from the original normalized Minnesota/Iowa direct-point fit before coefficient rounding. Using the four direct points currently retained by the project (Minnesota 50% plus Iowa 57%, 80%, and 90%), its cloud-point RMSE is about **0.54°F**.
 
-It is almost indistinguishable from the rounded general cubic in practical use.
+It is therefore best understood as the **measured-data reference model**, not merely a historical predecessor. It is almost indistinguishable from the rounded general cubic in practical use; rounding increases the same four-point RMSE by only about 0.02°F.
 
 ---
 
-## 8. Iowa graph curve
+## 8. Iowa PDF source-native fitted line and constrained cubic
 
-Derived from the digitized **fitted line** in the Iowa #1/#2 graph:
+The original Iowa Central PDF stores Figure 1 as vector content. Direct extraction of the displayed regression line shows that the regression itself is **not endpoint constrained**. It extends to approximately:
 
 ```text
+0% #1   ≈ +4.58°F
+100% #1 ≈ -56.47°F
+```
+
+while the report's measured neat-fuel cloud points are +3.2°F (#2) and -53.5°F (#1).
+
+A fourth-order polynomial reproduces the extracted vector path extremely closely:
+
+```text
+CPpdf(x) ≈ 4.57014
+           - 26.54218x
+           - 17.18273x²
+           + 59.33636x³
+           - 76.63960x⁴
+```
+
+This is a **project reconstruction of the displayed Iowa regression**, not an equation published by Iowa Central. It is retained primarily as a source-reproduction diagnostic rather than a generalized calculator model.
+
+For normalized model comparison, the project fits an endpoint-constrained cubic to that direct-PDF line while enforcing the report's measured +3.2/-53.5°F endpoints:
+
+```text
+F(x) = 0.484285x - 0.606821x² + 1.122537x³
+```
+
+This replaces the earlier screenshot-derived fitted-line diagnostic:
+
+```text
+historical screenshot fit:
 F(x) = 0.4510x - 0.5719x² + 1.1210x³
 ```
 
-The displayed coefficients sum to `1.0001` because of rounding. This model should be treated as a graph-derived approximation, not the report authors' published equation.
-
-It is generally **warmer / shallower** through the middle than the original project cubic.
+The new direct-PDF constrained cubic is generally warmer/shallower than the Rounded General cubic through the middle, but when both use the Iowa endpoints their difference is only about 0.2–1.2°F through 10–90% #1.
 
 ---
 
-## 9. Iowa graph points
+## 9. Iowa PDF constrained plotted-points cubic
 
-Derived from digitized **plotted points** from the Iowa graph:
+The plotted data markers in the original PDF are also vector objects. Fitting an endpoint-constrained cubic to those directly extracted marker centers gives:
 
 ```text
+F(x) = 0.536995x - 0.731212x² + 1.194217x³
+```
+
+This supersedes the earlier screenshot-derived plotted-points diagnostic:
+
+```text
+historical screenshot fit:
 F(x) = 0.5719x - 0.9072x² + 1.3353x³
 ```
 
-This also tends to be warmer than the original exact model through much of the middle range, though it is closer to the original than the Iowa fitted-line model.
-
-The two Iowa graph fits should not be counted as two independent publications; they are two interpretations of the same figure.
+The direct-PDF fitted-line and plotted-points cubics should not be counted as independent publications; they are two project interpretations of the same Iowa figure. The raw vector data used for both are retained under [`Data/`](Data/).
 
 ---
 
@@ -386,7 +418,7 @@ It is a strong single-formula diagnostic but was not the final winner of the bro
 F(x) = 0.583960x - 0.675308x² + 1.091348x³
 ```
 
-This is the leading result of the later model-family selection exercise.
+This is the leading result of the later **comparable-evidence-group model-family selection exercise**.
 
 Development constraints/choices:
 
@@ -399,7 +431,7 @@ Development constraints/choices:
 
 The result is surprisingly close to the original cubic family, but slightly more aggressive through the middle.
 
-This is currently the strongest **single-formula research candidate** if third-party methodological simplicity is prioritized.
+Its purpose is now stated more narrowly: it is the project's **systematic evidence-group compromise model** and the winning cubic from that family-comparison exercise. It should not be interpreted as superseding the rounded/original family for general petroleum use, because the systematic fit intentionally gave comparable influence to four historical fitting groups, two of which were Cenex-derived supplier-guidance groups. Against the four direct Minnesota/Iowa measured points, its RMSE is about **0.68°F**, compared with about **0.54°F** for Original Exact and **0.56°F** for Rounded General.
 
 ---
 
@@ -436,3 +468,20 @@ F(x) = x(0.348823 + 0.033029x) / (1 - 0.618148x)
 The rational family provided a different curvature shape with only a few parameters, but its leave-one-evidence-group-out result was behind the cubic and Bernstein quartic.
 
 ---
+
+## Naming recommendation for the future model selector
+
+Suggested user-facing names:
+
+- **Old Linear (3°F/10%)**
+- **Cenex Literature Cubic**
+- **Rounded General Cubic**
+- **Original Exact Cubic**
+- **Iowa PDF Curve (Constrained)**
+- **Iowa PDF Points (Constrained)**
+- **Cenex Southern-Guideline Test Cubic**
+- **Hybrid (Research)**
+- **Hybrid-Like Global Cubic**
+- **Systematic Robust Cubic**
+
+Keep localized corrections, minimax, and model-family diagnostics available in documentation rather than cluttering the primary calculator selector unless there is a specific research reason to expose them.

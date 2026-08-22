@@ -36,7 +36,7 @@ Many smooth independently derived formulas do not reproduce that local shape. Th
 
 ## 6\. Graph digitization is approximate
 
-The Iowa graph-derived models and Cenex Southern guideline point readings from the Agtegra-hosted chart were produced from published figures rather than original numeric datasets.
+The Iowa full-curve evidence is extracted from vector objects in the original published PDF rather than from an author-supplied numeric dataset, and the Cenex Southern guideline points are visual readings from the Agtegra-hosted supplier chart. Both remain figure-derived evidence and should be treated with appropriate uncertainty.
 
 Digitized values should be used for shape comparison and hypothesis testing, not represented as exact source tables.
 

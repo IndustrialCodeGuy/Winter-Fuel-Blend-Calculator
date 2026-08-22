@@ -7,7 +7,7 @@ The strongest general conclusions are:
 1. ordinary #1/#2 petroleum cloud-point blending is nonlinear;
 2. the Minnesota/Iowa data favor a shallower early drop than straight interpolation to realistic #1 endpoints;
 3. Cenex supplier guidance is somewhat more aggressive through parts of the 30–70% range;
-4. the original cubic family sits between the Iowa graph-derived shapes and the more aggressive supplier-guidance shapes; and
+4. the Rounded/Original family remains slightly colder than the source-native Iowa PDF regression through most of the interior range, while remaining less aggressive than several Cenex-oriented experimental shapes; and
 5. more flexible mathematical families did not generalize better than a constrained cubic in the project's leave-one-evidence-group-out test.
 
 ## 1. Direct measured-data checks
@@ -83,45 +83,151 @@ Approximate comparisons:
 
 Across the Minnesota 50% point plus those three Iowa points, the original exact cubic had only a tiny numerical advantage over the rounded formula; the rounded version remained preferable for simplicity.
 
-## 3. Corrected Iowa full-curve digitization
+A direct comparison over those four measured points makes the distinction clearer:
 
-An early normalized overlay accidentally made agreement look tighter than it really was because the traced graph was normalized by its own traced endpoints. That was later corrected by anchoring the graph's temperature axis and comparing the Iowa fitted line in **absolute temperature** against the formula using Iowa's known +3.2/-53.5°F endpoints.
+| Model | RMSE vs direct MN/Iowa points | MAE vs direct MN/Iowa points |
+|---|---:|---:|
+| **Original exact cubic** | **0.54°F** | **0.45°F** |
+| **Rounded general cubic** | **0.56°F** | **0.48°F** |
+| Systematic robust cubic | 0.68°F | 0.62°F |
 
-Preferred corrected figure:
+The exact cubic is essentially the endpoint-constrained least-squares cubic of this direct measured-point set. The rounded model gives up only about **0.02°F RMSE** while gaining much simpler coefficients and the exact `F(0.5)=0.25` interpretation. The systematic robust cubic remains close, but it moves slightly away from the direct measurements because it was designed to compromise among broader historical evidence groups, including two Cenex-derived supplier-guidance groups.
 
-![Corrected Iowa overlay](Images/iowa-absolute-overlay.png)
+## 3. Iowa full-curve validation — direct source-PDF vector extraction
 
-The corrected digitization showed the rounded/original project curve generally about **0.5–1.3°F colder** than the plotted Iowa fitted line through much of 10–80%, while agreement became very close around 90%.
+The Iowa full-curve comparison went through three increasingly rigorous passes:
 
-This correction is important because it prevents the project from overstating agreement.
+1. **first screenshot pass** — the traced fitted line was normalized by its own traced endpoints, which made agreement look artificially tight;
+2. **absolute-temperature screenshot pass** — the screenshot axes were calibrated in °F and the rounded formula was evaluated with Iowa's measured +3.2/-53.5°F endpoints; and
+3. **source-native PDF pass** — the original PDF was inspected directly and the fitted line and plotted markers were extracted from their vector objects.
 
-## 4. Two Iowa graph-derived cubic models
+The third pass is now preferred.
 
-Later, the Iowa graph was treated as a source for two independent project fits:
+### The displayed Iowa regression is not endpoint constrained
 
-### Fit to the displayed fitted line
-
-```text
-Fcurve(x) = 0.4510x - 0.5719x² + 1.1210x³
-```
-
-### Fit to digitized plotted points
-
-```text
-Fpoints(x) = 0.5719x - 0.9072x² + 1.3353x³
-```
-
-Both are generally warmer / less aggressive through the middle than the original exact cubic.
-
-This creates a useful evidence ordering through much of the practical range:
+Direct extraction of the fitted line from Figure 1 gives approximately:
 
 ```text
-Iowa graph-derived shapes
-        -> original project cubic family
-        -> more aggressive Cenex Southern-guideline-oriented shapes
+regression at 0% #1   ≈ +4.58°F
+regression at 100% #1 ≈ -56.47°F
 ```
 
-That is one reason the original family remains defensible even after the supplier-oriented research.
+The report's measured neat-fuel values remain:
+
+```text
+#2 = +3.2°F
+#1 = -53.5°F
+```
+
+So the displayed regression overshoots both measured endpoints. That is a property of the regression line itself; it is not a digitization error and it should not be silently forced away when reproducing the source figure.
+
+A descriptive fourth-order polynomial reproduces the extracted vector path to about 0.01°F RMSE:
+
+```text
+CPpdf(x) ≈ 4.57014
+           - 26.54218x
+           - 17.18273x²
+           + 59.33636x³
+           - 76.63960x⁴
+```
+
+This is a **project reconstruction**, not an equation published by Iowa Central.
+
+### Rounded General vs. the source-native Iowa line
+
+Using Iowa's measured +3.2/-53.5°F endpoints for the Rounded General model:
+
+| #1 | Rounded General | Iowa PDF fitted line | Rounded − Iowa |
+|---:|---:|---:|---:|
+| 10% | +0.18°F | +1.79°F | -1.60°F |
+| 20% | -2.33°F | -1.07°F | -1.26°F |
+| 30% | -4.76°F | -3.96°F | -0.80°F |
+| 40% | -7.50°F | -6.96°F | -0.54°F |
+| 50% | -10.98°F | -10.37°F | -0.60°F |
+| 60% | -15.58°F | -14.66°F | -0.92°F |
+| 70% | -21.73°F | -20.48°F | -1.25°F |
+| 80% | -29.82°F | -28.67°F | -1.15°F |
+| 90% | -40.28°F | -40.26°F | -0.02°F |
+
+Negative values mean the Rounded General model is colder.
+
+On a regular 5% grid:
+
+```text
+10–80%:
+RMSE ≈ 1.05°F
+MAE  ≈ 0.99°F
+maximum absolute difference ≈ 1.60°F
+
+10–90%:
+RMSE ≈ 1.00°F
+MAE  ≈ 0.92°F
+maximum absolute difference ≈ 1.60°F
+```
+
+This confirms the earlier qualitative conclusion while tightening the source handling: the rounded model is usually modestly colder, and agreement is especially close near 90%.
+
+![Iowa source-PDF vector comparison](Images/iowa-pdf-vector-overlay.png)
+
+The underlying source-path extraction and comparison values are retained in:
+
+- [`Data/iowa-pdf-vector-fitted-line.csv`](Data/iowa-pdf-vector-fitted-line.csv)
+- [`Data/iowa-pdf-vector-plotted-points.csv`](Data/iowa-pdf-vector-plotted-points.csv)
+- [`Data/iowa-pdf-rounded-comparison.csv`](Data/iowa-pdf-rounded-comparison.csv)
+
+## 4. Iowa PDF-derived endpoint-constrained project models
+
+The raw Iowa regression is useful for **source reproduction**, but most calculator models require exact entered endpoints. The project therefore keeps a second, explicitly transformed interpretation for normalized model comparison.
+
+### Endpoint-constrained fit to the direct-PDF fitted line
+
+```text
+Fcurve(x) = 0.484285x - 0.606821x² + 1.122537x³
+```
+
+This cubic is fit to the direct-PDF regression path while enforcing:
+
+```text
+F(0) = 0
+F(1) = 1
+```
+
+With the same Iowa +3.2/-53.5°F endpoints, the Rounded General model is only about **0.2–1.2°F colder through 10–90%** than this constrained Iowa interpretation; the largest difference is about **1.15°F around 40% #1**.
+
+### Endpoint-constrained fit to the direct-PDF plotted markers
+
+```text
+Fpoints(x) = 0.536995x - 0.731212x² + 1.194217x³
+```
+
+These equations supersede the earlier screenshot-derived graph diagnostics. They remain **project-developed equations**, not equations published by Iowa Central.
+
+The source-native regression, plotted markers, and these constrained fits should not be counted as independent publications. They are different representations of the same Iowa figure.
+
+### Evidence-first normalized comparison
+
+The primary model-selection visual is a normalized evidence chart rather than the +14/-50°F model-history chart:
+
+![Evidence-first normalized comparison](Images/evidence-first-normalized-comparison.png)
+
+The revised figure now distinguishes:
+
+- direct Minnesota/Iowa retained measurements;
+- Iowa plotted markers extracted directly from the PDF;
+- the **source-native Iowa fitted line**, shown without pretending it hits the measured endpoints;
+- the endpoint-constrained Iowa PDF project cubic;
+- Rounded General and Original Exact;
+- Systematic Robust; and
+- the Cenex Southern Region supplier guideline.
+
+The important visual conclusions remain:
+
+- **Original Exact** and **Rounded General** stay very close to the retained direct Minnesota/Iowa points;
+- the source-native Iowa line is generally warmer/shallower through much of the interior range;
+- the Systematic Robust curve is a historical evidence-group compromise rather than a superior measured-data fit; and
+- Cenex Southern is supplier guidance, not the truth curve every general model should be optimized against.
+
+The underlying values are retained in [`Data/evidence-first-normalized-comparison.csv`](Data/evidence-first-normalized-comparison.csv).
 
 ## 5. Cenex 3°F rule after normalization
 
@@ -178,7 +284,9 @@ Approximate chart points:
 50:-2, 60:-8, 70:-14, 80:-20, 90:-36, 100:-40°F
 ```
 
-The project repeatedly used +14/-45°F as a **working comparison pair** when visualizing candidate formulas. That pair is not claimed as the Cenex chart's actual #1 endpoint; it was chosen to compare production-oriented formulas under a slightly conservative #1 assumption.
+The project now uses +14/-50°F as its **working comparison pair** for model-history temperature charts. The -50°F #1 value is a project compromise between Cenex southern guidance around -40°F and the approximately -52 to -53.5°F measured Minnesota/Iowa #1 values. It is not claimed as the Cenex chart's actual #1 endpoint or as one universal #1 specification.
+
+**Important chart-reading note:** the full-model figure is a **model-history / supplier-guideline comparison**, not an evidence-quality ranking. The normalized project formulas in that figure are evaluated using the +14/-50°F working endpoints, while the plotted Cenex Southern guideline itself reaches approximately -40°F at neat #1. The normalized formulas are therefore forced to end 10°F colder than that supplier reference. This intentionally makes the chart sensitive to the endpoint assumption and is another reason that closeness to the Cenex line must not be read as an evidence ranking.
 
 Full model comparison:
 
@@ -188,11 +296,11 @@ Error relative to the interpolated Cenex Southern guideline:
 
 ![Model error vs Cenex Southern guideline](Images/full-model-error-vs-cenex-southern.png)
 
-The piecewise hybrid produced the smallest practical-range error among several exploratory models, but it accomplishes that by explicitly using different behavior below and above a chosen transition range.
+Changing the working #1 endpoint from -45°F to -50°F materially changes the numerical ranking against the fixed Cenex Southern guideline. In the +14/-50°F chart, the Rounded General curve happens to have the lowest 10–80% RMSE among the retained plotted models at about **1.40°F**. That does **not** make it a Cenex-fitted model; it illustrates how strongly an absolute-temperature supplier-error ranking depends on the endpoint pair used to scale normalized formulas.
 
-For a public single-formula model, methodological simplicity may be more valuable than the last fraction of a degree of fit.
+For a public general model, evidence hierarchy and measured-data behavior are therefore more informative than the last fraction of a degree against this one supplier chart.
 
-The preserved **Cenex Literature Cubic** is also shown in this comparison. Unlike the later Cenex Southern-guideline test fit, it was **not optimized to this chart**. It is constrained by the Cenex 3°F-per-10% starting rate, the derived -1°F 50/50 anchor, +14°F #2, and the selected neat-#1 endpoint. With the +14/-45°F comparison endpoints used here, its 10–80% RMSE against the Southern guideline is about **1.51°F**. That is close to the original exact cubic, while retaining a much clearer Cenex-literature rationale.
+The preserved **Cenex Literature Cubic** is also shown. Unlike the later Cenex Southern-guideline test fit, it was **not optimized to the Southern chart**. It is constrained by the Cenex 3°F-per-10% starting rate, the derived -1°F 50/50 anchor, +14°F #2, and the selected neat-#1 endpoint. With the +14/-50°F working comparison pair, its 10–80% RMSE against the Southern guideline is about **1.77°F**.
 
 ### Wintermaster whole-calculator consistency check
 
@@ -290,6 +398,8 @@ Development choices:
 - robust loss to reduce leverage of isolated chart anomalies; and
 - leave-one-evidence-group-out evaluation.
 
+**Iowa-data verification:** the Iowa evidence group in this systematic pass used the explicit published stock-blend evidence, not the screenshot-derived Iowa fitted-line or plotted-points equations. The direct-PDF re-extraction therefore leaves the systematic coefficients and LOO ranking unchanged.
+
 Resulting formulas are listed in [MODEL-CATALOG.md](MODEL-CATALOG.md).
 
 ### Leave-one-evidence-group-out result
@@ -307,7 +417,7 @@ Average held-out normalized RMSE from the project test:
 
 The quartic can fit the combined development set more flexibly, but its poorer held-out performance suggests that the extra degree of freedom was fitting source-specific detail rather than a stable common shape.
 
-### Leading systematic cubic
+### Systematic evidence-group compromise cubic
 
 ```text
 F(x) = 0.583960x - 0.675308x² + 1.091348x³
@@ -327,6 +437,8 @@ and the earlier independently obtained source-balanced cubic:
 ```
 
 Two different aggregation approaches therefore converged on nearly the same region of coefficient space.
+
+That convergence is useful, but the scope of the result matters. The systematic pass answers: **which tested mathematical family best compromises among the four historical fitting evidence groups under comparable group influence?** It does not answer: **which curve best represents the highest-ranked direct petroleum measurements?** For the latter question, the Original Exact / Rounded General family remains the stronger reference.
 
 ![Systematic family comparison](Images/systematic-family-comparison.png)
 
@@ -355,3 +467,11 @@ A useful production/research choice should consider:
 - explainability to a third party.
 
 That is why a slightly higher-error single cubic may be preferable to a piecewise or highly localized model that appears more accurate only because it is tuned directly to approximate chart points.
+
+For the current project interpretation, model choice is separated by purpose:
+
+- **Rounded General Cubic** — preferred general petroleum model;
+- **Original Exact Cubic** — direct Minnesota/Iowa measured-data reference;
+- **Cenex Literature Cubic** — Cenex-literature/rule-oriented reference;
+- **Systematic Robust Cubic** — balanced historical evidence-group compromise and model-family research result; and
+- **Cenex Southern-oriented test/hybrid models** — supplier-guideline diagnostics rather than evidence that colder predictions are intrinsically more correct.
