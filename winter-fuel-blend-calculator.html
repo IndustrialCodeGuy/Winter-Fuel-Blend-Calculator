@@ -1,0 +1,1742 @@
+<!--
+Winter Fuel Blend Ratio Calculator
+Copyright 2026 Dan Michel.
+SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+
+See LICENSE and NOTICE in the source repository for license terms.
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Winter Fuel Blend – Blend Ratio Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Estimate the amount of #1 fuel needed to reach a target #1/#2 blend, along with cloud-point, operability, and tank-capacity estimates." />
+    <style>
+        /* =========================
+       Color variables & themes
+       ========================= */
+        :root {
+            color-scheme: light dark;
+
+            /* Neutral public-facing palette. */
+            --page-bg: #334155;
+            --panel: #f8fafc;
+            --soft: #f1f5f9;
+            --border: #94a3b8;
+            --text: #0f172a;
+            --heading-on-bg: #f8fafc;
+            --muted: #475569;
+            --accent: #2563eb;
+            --accent-soft: rgba(37, 99, 235, 0.12);
+            --ok: #15803d;
+            --warn: #b45309;
+            --error: #b91c1c;
+
+            --bg: var(--page-bg);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --page-bg: #0f172a;
+                --panel: #1e293b;
+                --soft: #111827;
+                --border: #475569;
+                --text: #f8fafc;
+                --heading-on-bg: #f8fafc;
+                --muted: #cbd5e1;
+                --accent: #60a5fa;
+                --accent-soft: rgba(96, 165, 250, 0.16);
+                --ok: #4ade80;
+                --warn: #fbbf24;
+                --error: #f87171;
+            }
+        }
+
+        /* =========================
+       Global reset & base
+       ========================= */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 10px;
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            line-height: 1.45;
+            transition: background 0.25s ease, color 0.25s ease;
+        }
+
+        /* =========================
+       Headings & text helpers
+       ========================= */
+        h1 {
+            font-size: 1.7rem;
+            margin: 0;
+            color: var(--heading-on-bg);
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            line-height: 1.2;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin: 0 0 4px;
+            font-size: 0.95rem;
+            color: var(--text);
+        }
+
+        .center-item {
+            text-align: center;
+        }
+
+        .h1-sub {
+            margin-bottom: 0;
+            max-width: 599px;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .sub-label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .small-note {
+            display: block;
+            font-size: 0.70rem;
+            color: var(--muted);
+            margin-top: 3px;
+        }
+
+        #c1-heel-cp-note {
+            min-height: 2.9em;
+        }
+
+        .warn-color {
+            color: var(--warn);
+        }
+
+        /* Keep tank warning rows from collapsing when empty */
+        #tank-warning-heel,
+        #tank-warning-size {
+            min-height: 1.45em;
+        }
+
+        /* Left-align the tank-size warning beneath its input */
+        #tank-warning-size {
+            width: 100%;
+            margin-left: 0;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        /* =========================
+       Layout containers
+       ========================= */
+        .wrap {
+            max-width: 720px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            padding-bottom: 12px;
+            gap: 12px;
+        }
+
+        .c2-target-row {
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            padding-bottom: 4px;
+        }
+
+        .c2-slider-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Large/default */
+        .c2-cf-control {
+            align-items: center;
+            justify-content: flex-start;
+            margin-top: 19px;
+            padding-left: 4px;
+        }
+
+        .c2-cf-note {
+            grid-column: 1 / -1;
+            margin: -6px 0 0;
+            padding-left: 4px;
+            color: var(--text);
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .c2-cf-control label {
+            margin: 0;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        .c2-cf-control input[type="checkbox"] {
+            display: block;
+            flex: 0 0 14px;
+            width: 14px;
+            height: 14px;
+            margin: 0;
+            align-self: center;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        .card {
+            background: var(--panel);
+            border-radius: 16px;
+            padding: 10px 12px 0;
+            border: 3px solid var(--border);
+            transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .card-header-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .dashed-section {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--text);
+        }
+
+        /* =========================
+       Buttons & toggles
+       ========================= */
+        .advanced-toggle {
+            background: none;
+            border: none;
+            padding: 0;
+            font-size: 0.78rem;
+            color: var(--muted);
+            text-decoration: underline;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .advanced-toggle:hover {
+            color: var(--text);
+        }
+
+        button:focus-visible,
+        input:focus-visible,
+        summary:focus-visible {
+            outline: 3px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        .reset-btn {
+            padding: 4px 12px;
+            border-radius: 999px;
+            border: 2px solid var(--accent);
+            background: transparent;
+            color: var(--text);
+            font-size: 0.8rem;
+            font-weight: 550;
+            cursor: pointer;
+        }
+
+        .reset-btn:hover {
+            background: var(--accent-soft);
+        }
+
+        /* =========================
+       Form controls
+       ========================= */
+        input[type="number"],
+        select,
+        .slider-arrow {
+            font-size: 0.8rem;
+            border: 2px solid rgba(148, 163, 184, 0.55);
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--text);
+            outline: none;
+            transition:
+                border-color 0.15s ease,
+                box-shadow 0.15s ease,
+                background 0.15s ease;
+        }
+
+        input[type="number"]:hover,
+        select:hover,
+        .slider-arrow:hover {
+            border-color: var(--accent);
+            cursor: pointer;
+        }
+
+        @media (prefers-color-scheme: dark) {
+
+            input[type="number"],
+            select,
+            .slider-arrow {
+                background: #020617;
+            }
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 10px;
+            margin-top: 0;
+        }
+
+        input[type="number"]:focus,
+        select:focus,
+        .slider-arrow:focus {
+            border-color: var(--accent);
+        }
+
+        /* Number input spinner controls */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            opacity: 1;
+            display: block;
+            height: auto;
+        }
+
+        /* Make spinner arrows brighter on hover */
+        input[type="number"]:hover::-webkit-inner-spin-button,
+        input[type="number"]:hover::-webkit-outer-spin-button {
+            filter: brightness(2.0);
+        }
+
+        /* Firefox spinner brightening */
+        input[type="number"]:hover {
+            filter: brightness(1.2);
+        }
+
+        /* =========================
+       Slider controls
+       ========================= */
+        .slider-row-stack {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .slider-row-stack input[type="range"] {
+            flex: 1 1 auto;
+            accent-color: var(--warn);
+            min-width: 0;
+        }
+
+        .slider-col {
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            width: 5ch;
+            font-variant-numeric: tabular-nums;
+            font-size: 1.0rem;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .slider-arrow {
+            flex: 1 1 auto;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            line-height: 1;
+            max-width: 36px;
+        }
+
+        .slider-arrow-lf {
+            padding: 7.5px 8px 7px 7px;
+        }
+
+        .slider-arrow-rt {
+            padding: 7.5px 7px 7px 8px;
+        }
+
+        .cp-bubble {
+            margin: 6px 0;
+            font-size: 1.5rem;
+            border-radius: 12px;
+            color: var(--ok);
+            display: inline-block;
+        }
+
+        .projected-values {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .projected-separator {
+            font-size: 1.5rem;
+            color: var(--text);
+        }
+
+        /* =========================
+       Advanced inputs
+       ========================= */
+        .adv-wrapper {
+            align-items: flex-end;
+            padding-top: 10px;
+            border-top: 1px dashed var(--muted);
+            margin-top: 0;
+        }
+
+        #c1-adv-block:not([hidden]) {
+            display: grid;
+        }
+
+        #c2-adv-block:not([hidden]) {
+            display: block;
+        }
+
+        .adv-field label {
+            text-align: center;
+            display: block;
+            margin: 0 0 4px;
+            font-size: 0.75rem;
+            color: var(--text);
+        }
+
+        .adv-field {
+            flex: 0 1 162.5px;
+            max-width: 162.5px;
+        }
+
+        .adv-inputs {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* =========================
+       Scenario & outputs
+       ========================= */
+
+        .scenario {
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 6px;
+        }
+
+        .scenario-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 2px;
+        }
+
+        .scenario-row span:first-child {
+            white-space: nowrap;
+        }
+
+        .scenario-row strong {
+            white-space: nowrap;
+        }
+
+        .scenario-dots {
+            flex: 1;
+            border-bottom: 1px dashed rgba(148, 163, 184, 0.55);
+            margin: 0 4px;
+        }
+
+        .stack-bottom {
+            margin-top: 10px;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            border-top: 1px dashed var(--muted);
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .stack-bottom-row {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .stack-bottom-row strong {
+            color: var(--text);
+        }
+
+        /* Capacity result styling */
+        .scenario-row strong.text-ok {
+            color: var(--ok);
+        }
+
+        .scenario-row strong.text-error {
+            color: var(--warn);
+        }
+
+        /* =========================
+       Misc controls
+       ========================= */
+        .cf-control {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .model-details {
+            padding-bottom: 24px;
+        }
+
+        .model-details summary {
+            border-top: 1px dashed var(--muted);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--muted);
+            padding-top: 10px;
+        }
+
+        .model-details[open] summary {
+            color: var(--text);
+        }
+
+        .model-details-content {
+            margin-top: 6px;
+        }
+
+        .capacity-note {
+            margin-top: -2px;
+            margin-left: 6px;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        /* =========================
+       Media queries (mobile layout)
+       ========================= */
+        @media (max-width: 599px) {
+            .warn-color {
+                text-align: center;
+            }
+
+            .wrap {
+                max-width: 100%;
+            }
+
+            body {
+                padding: 0 0 20px;
+            }
+
+            h1 {
+                margin: 8px 0 0 10px;
+            }
+
+            .h1-sub {
+                margin: 0 0 0 10px;
+            }
+
+            .row {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .c1-row1 {
+                margin-right: 50px;
+                margin-left: 50px;
+                padding-bottom: 15px;
+            }
+
+            .c2-target-row {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            /*
+Allow the slider content and checkbox to be individually
+ordered around the projected-cloud-point section.
+*/
+            .c2-slider-column {
+                display: contents;
+            }
+
+            .c2-slider-content {
+                order: 1;
+            }
+
+            .c2-projected-column {
+                order: 2;
+            }
+
+            /* Small mode */
+            .c2-cf-control {
+                order: 3;
+                justify-content: flex-start;
+                margin-top: 7px;
+                padding-left: 4px;
+            }
+
+            .c2-cf-note {
+                order: 4;
+                margin-top: -6px;
+                padding-left: 4px;
+                text-align: left;
+                white-space: normal;
+            }
+
+            /* In the stacked layout, center the warning beneath its
+               input while allowing it to use nearly the full viewport. */
+            #tank-warning-size {
+                position: relative;
+                left: 50%;
+                transform: translateX(-50%);
+                width: calc(100vw - 24px);
+                max-width: calc(100vw - 24px);
+                margin-left: 0;
+                text-align: center;
+                white-space: normal;
+            }
+
+            .slider-arrow {
+                max-width: 48px;
+            }
+
+            .slider-arrow-lf {
+                margin-right: 2px;
+            }
+
+            .slider-arrow-rt {
+                margin-left: 2px;
+            }
+
+            .adv-inputs {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                justify-items: center;
+                gap: 8px;
+            }
+
+            .c2-adv-inputs .adv-field:nth-child(1) {
+                grid-column: 1 / 3;
+            }
+
+            .c2-adv-inputs .adv-field:nth-child(2) {
+                grid-column: 1 / 2;
+                grid-row: 2;
+            }
+
+            .c2-adv-inputs .adv-field:nth-child(3) {
+                grid-column: 2 / 3;
+                grid-row: 2;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+    <noscript>This calculator requires JavaScript to run.</noscript>
+
+    <div class="wrap">
+
+        <!-- ==============================
+             PAGE TITLE + SUBTITLE
+        =============================== -->
+        <div>
+            <h1>Winter Fuel Blend Ratio Calculator</h1>
+
+            <div class="h1-sub">
+                Calculates how many gallons of #1 to add to your existing tank contents
+                to reach a target #1 / #2 blend, plus an estimated cloud point and operability.
+            </div>
+        </div>
+
+        <!-- ==============================
+             PANEL 1 — TANK SETTINGS
+        =============================== -->
+        <div class="card">
+
+            <!-- Panel header -->
+            <div class="card-header">
+                <h2>Tank settings</h2>
+
+                <div class="card-header-actions">
+                    <button type="button" id="c1-advanced-toggle" class="advanced-toggle" aria-expanded="false" aria-controls="c1-adv-block">
+                        Advanced settings
+                    </button>
+
+                    <button type="button" class="reset-btn" id="reset-tank">Reset tank</button>
+                </div>
+            </div>
+
+            <!-- Tank inputs: gallons + tank size -->
+            <div class="row c1-row1">
+
+                <!-- Current gallons -->
+                <div>
+                    <label for="c1-heel2">Current Gallons in Tank</label>
+                    <input id="c1-heel2" type="number" min="1" step="1" placeholder="Enter current tank gallons">
+                    <div id="tank-warning-heel" class="small-note warn-color" aria-live="polite"></div>
+                </div>
+
+                <!-- Tank size -->
+                <div>
+                    <label for="c1-tankSize">Tank Size in Gallons</label>
+                    <input id="c1-tankSize" type="number" min="1" step="1" placeholder="Optional – used for capacity check">
+                    <div id="tank-warning-size" class="small-note warn-color" aria-live="polite"></div>
+                </div>
+            </div>
+
+            <!-- Tank heel mix slider + CP summary -->
+            <div class="row">
+
+                <!-- Mix slider block -->
+                <div>
+                    <label for="c1-heel2pct" class="center-item">
+                        Current Mix Ratio in Tank
+                    </label>
+
+                    <div class="slider-row-stack">
+                        <div class="slider-col">
+                            <div class="slider-title">#1</div>
+                            <div class="slider-value" id="c1-heel1pct-label">0%</div>
+                        </div>
+
+                        <button type="button" class="slider-arrow slider-arrow-lf" id="c1-heel-dec" aria-label="Decrease current #2 percentage">◀</button>
+
+                        <input id="c1-heel2pct" type="range" min="0" max="100" step="1" value="100" aria-describedby="c1-heel-cp-note">
+
+                        <button type="button" class="slider-arrow slider-arrow-rt" id="c1-heel-inc" aria-label="Increase current #2 percentage">▶</button>
+
+                        <div class="slider-col">
+                            <div class="slider-title">#2</div>
+                            <div class="slider-value" id="c1-heel2pct-label">100%</div>
+                        </div>
+                    </div>
+
+                    <div class="sub-label center-item">Drag to adjust the current blend.</div>
+                </div>
+
+                <!-- Current CP bubble -->
+                <div>
+                    <label class="center-item">Current estimated cloud point</label>
+
+                    <div class="center-item">
+                        <div id="c1-heel-cp-current" class="cp-bubble">14.0 °F</div>
+                    </div>
+
+                    <div id="c1-heel-cp-note" class="small-note center-item">
+                        Estimated cloud point uses the nonlinear blend model and mix ratio slider.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced CP inputs -->
+            <div id="c1-adv-block" class="adv-wrapper" hidden>
+
+                <div id="c1-adv-cp-inputs" class="adv-inputs">
+                    <div class="adv-field">
+                        <label for="c1-heel-cp1">#1 Cloud Point °F</label>
+                        <input id="c1-heel-cp1" type="number" step="1" value="-55">
+                    </div>
+
+                    <div class="adv-field">
+                        <label for="c1-heel-cp2">#2 Cloud Point °F</label>
+                        <input id="c1-heel-cp2" type="number" step="1" value="14">
+                    </div>
+                </div>
+
+                <div class="small-note warn-color" id="c1-adv-note">
+                    Cloud points should be set based on supplier specifications.
+                </div>
+            </div>
+        </div>
+
+        <!-- ==============================
+             PANEL 2 — TARGET RATIO BLEND
+        =============================== -->
+        <div class="card">
+
+            <!-- Panel header -->
+            <div class="card-header">
+                <h2>Target Ratio Blend</h2>
+                <button type="button" id="c2-advanced-toggle" class="advanced-toggle" aria-expanded="false" aria-controls="c2-adv-block">
+                    Advanced settings
+                </button>
+            </div>
+            <!-- Target ratio and projected cloud point -->
+            <div class="row c2-target-row">
+
+                <!-- Left column: slider and cold-flow checkbox -->
+                <div class="c2-slider-column">
+
+                    <div class="c2-slider-content">
+                        <label for="c2-desired2" class="center-item">Target Mix Ratio</label>
+
+                        <div class="slider-row-stack">
+                            <div class="slider-col">
+                                <div class="slider-title">#1</div>
+                                <div class="slider-value" id="c2-desired1pct-label">30%</div>
+                            </div>
+
+                            <button type="button" class="slider-arrow slider-arrow-lf" id="c2-desired-dec" aria-label="Decrease target #2 percentage">◀</button>
+
+                            <input id="c2-desired2" type="range" min="1" max="99" step="1" value="70" aria-describedby="c2-projected-cp-note">
+
+                            <button type="button" class="slider-arrow slider-arrow-rt" id="c2-desired-inc" aria-label="Increase target #2 percentage">▶</button>
+
+                            <div class="slider-col">
+                                <div class="slider-title">#2</div>
+                                <div class="slider-value" id="c2-desired2pct-label">70%</div>
+                            </div>
+                        </div>
+
+                        <div class="sub-label center-item">
+                            Drag to adjust the target blend
+                        </div>
+                    </div>
+
+                    <!-- Stays tied to the slider in large mode -->
+                    <div class="cf-control c2-cf-control">
+                        <input id="c2-cf" type="checkbox" checked>
+                        <label for="c2-cf">Cold flow will be added</label>
+                    </div>
+                </div>
+
+                <!-- Right column: projected cloud point and operability -->
+                <div class="c2-projected-column">
+                    <label class="center-item">
+                        Projected Cloud Point / Operability
+                    </label>
+
+                    <div class="projected-values">
+                        <div id="c2-projected-cp" class="cp-bubble">–</div>
+                        <span class="projected-separator">/</span>
+                        <div id="c2-projected-op" class="cp-bubble">–</div>
+                    </div>
+
+                    <div id="c2-projected-cp-note" class="small-note center-item">
+                        Projected cloud point uses the nonlinear blend model and mix ratio slider.
+                    </div>
+                </div>
+                <!-- Full-width cold-flow status message -->
+                <div class="small-note c2-cf-note" id="c2-out-op-note" aria-live="polite">
+                    Cold flow treatment assumed to improve operability by 12.0°F compared to cloud point.
+                </div>
+            </div>
+
+            <!-- Advanced Cloud Flow Settings -->
+            <div id="c2-adv-block" class="adv-wrapper" hidden>
+
+                <div id="c2-adv-cp-inputs" class="adv-inputs c2-adv-inputs">
+
+                    <div class="adv-field">
+                        <label for="c2-fuel-cp1">#1 Cloud point °F</label>
+                        <input id="c2-fuel-cp1" type="number" step="1" value="-55">
+                    </div>
+
+                    <div class="adv-field">
+                        <label for="c2-cf-dose">Cold flow (oz/100 gal)</label>
+                        <input id="c2-cf-dose" type="number" min="1" step="1" value="16">
+                    </div>
+
+                    <div class="adv-field">
+                        <label for="c2-cf-effect">Effect at this dose (°F)</label>
+                        <input id="c2-cf-effect" type="number" min="0" step="1" value="12">
+                    </div>
+                </div>
+
+                <div class="small-note warn-color" id="c2-adv-note">
+                    Cloud point/cold-flow should be set based on supplier specifications.
+                </div>
+            </div>
+
+            <!-- ==============================
+                 OUTPUTS — #1 Required, Totals, Capacity
+            =============================== -->
+            <div class="scenario dashed-section">
+
+                <!-- Single rows each with dotted leader -->
+                <div class="scenario-row">
+                    <span>Required #1 gallons to reach target blend:</span>
+                    <span class="scenario-dots"></span>
+                    <strong id="c2-out-gal1">–</strong>
+                </div>
+
+                <div class="scenario-row">
+                    <span>Total gallons after adding #1:</span>
+                    <span class="scenario-dots"></span>
+                    <strong id="c2-out-total1">–</strong>
+                </div>
+
+                <!-- Remaining capacity is always shown -->
+                <div class="scenario-row">
+                    <span>Remaining tank capacity:</span>
+                    <span class="scenario-dots"></span>
+                    <strong id="c2-out-cap1" class="text-normal">–</strong>
+                </div>
+
+                <!-- Cold flow block -->
+                <div id="c2-cf-block">
+
+                    <div class="scenario-row">
+                        <span>Cold flow required at this dose:</span>
+                        <span class="scenario-dots"></span>
+                        <strong id="c2-out-cf-oz">–</strong>
+                    </div>
+
+                    <div class="small-note capacity-note">
+                        *Remaining tank capacity does not include cold-flow additive volume.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==============================
+                 FINAL PERFORMANCE — Blend, CP, Operability
+            =============================== -->
+            <div class="stack-bottom">
+
+                <div class="stack-bottom-row">
+                    <span>Projected cloud point:</span>
+                    <strong id="c2-out-cp">–</strong>
+                </div>
+
+                <div class="stack-bottom-row">
+                    <span>Projected operability:</span>
+                    <strong id="c2-out-op">–</strong>
+                </div>
+            </div>
+
+            <!-- ==============================
+                 MODEL DETAILS + ASSUMPTIONS
+            =============================== -->
+            <details class="model-details">
+                <summary>Model details &amp; assumptions</summary>
+
+                <div class="small-note model-details-content">
+                    <ul>
+                        <li>
+                            <strong>Current tank blend:</strong><br>
+                            The current mix slider represents the percentage of #2 fuel already
+                            in the tank. The #1 percentage is calculated as the remainder:
+                            <code>#1% = 100% − #2%</code>.
+                        </li>
+
+                        <li>
+                            <strong>Target blend:</strong><br>
+                            The target slider represents the desired percentage of #2 fuel after
+                            adding #1. The target #1 percentage is calculated as the remainder.
+                            The calculator assumes that only straight #1 fuel is being added.
+                        </li>
+
+                        <li>
+                            <strong>When the target is out of range:</strong><br>
+                            If the current tank already contains a greater percentage of #1 than
+                            the selected target, the target cannot be reached by adding more #1.
+                            The mix sliders or tank values must be adjusted.
+                        </li>
+
+                        <li>
+                            <strong>Gallons of #1 required:</strong><br>
+                            The amount of #1 to add is calculated from the current gallons,
+                            current #2 fraction, and target #2 fraction:
+                            <br>
+                            <code>
+                                #1 to add =
+                                (current #2 gallons − target #2 fraction × current gallons)
+                                ÷ target #2 fraction
+                            </code>.
+                        </li>
+
+                        <li>
+                            <strong>Total gallons after blending:</strong><br>
+                            The resulting total is the current tank gallons plus the calculated
+                            gallons of #1 to add.
+                        </li>
+
+                        <li>
+                            <strong>Tank capacity:</strong><br>
+                            When a tank size is entered, remaining capacity is calculated after
+                            adding the required #1 fuel. If the resulting total exceeds the tank
+                            size, the calculator displays <code>Over Capacity</code>.
+                            Cold-flow additive volume is not included in this capacity check.
+                        </li>
+
+                        <li>
+                            <strong>Cloud-point blend model:</strong><br>
+                            Cloud point is estimated with a nonlinear empirical blend curve derived
+                            from normalized Minnesota and Iowa #1/#2 diesel blend-test data. For
+                            <code>x</code> equal to the #1 fraction:
+                            <br>
+                            <code>F(x) = 0.6x − 0.8x² + 1.2x³</code>
+                            <br>
+                            <code>Blend CP = CP₂ + (CP₁ − CP₂) × F(x)</code>.
+                            The rounded coefficients closely match the more precise fitted curve
+                            while being easier to document and maintain.
+                        </li>
+
+                        <li>
+                            <strong>Current estimated cloud point:</strong><br>
+                            The current tank estimate uses the nonlinear blend model with the
+                            current-card #1 and #2 cloud-point settings and the current tank mix.
+                        </li>
+
+                        <li>
+                            <strong>Projected cloud point:</strong><br>
+                            The projected value beside the target slider uses the same nonlinear
+                            model with the selected target ratio, the target-card #1 cloud point,
+                            and the current-card #2 cloud point.
+                        </li>
+
+                        <li>
+                            <strong>Final estimated cloud point:</strong><br>
+                            The final result uses the actual calculated #1 fraction after the new
+                            #1 is added, then applies the same nonlinear model. If the current tank's
+                            #1 cloud-point setting differs from the added #1 cloud-point setting,
+                            those two #1 endpoints are volume-weighted across the #1 gallons before
+                            the nonlinear #1/#2 curve is applied.
+                        </li>
+
+                        <li>
+                            <strong>Default fuel assumptions:</strong><br>
+                            The default #2 cloud point is <code>14°F</code>, intended to represent
+                            the summer #2 heel normally present when winter blending begins.
+                            The default #1 cloud point is <code>-55°F</code>, close to the neat-#1
+                            values measured in the Minnesota and Iowa test data used to develop
+                            the curve. Actual fuel can vary substantially, so the advanced cloud-point
+                            values should be replaced with supplier specifications or test data when known.
+                        </li>
+
+                        <li>
+                            <strong>Model-data limitation:</strong><br>
+                            The Minnesota and Iowa blend tests used #2 fuels with cloud points around
+                            <code>+2°F to +3°F</code>, not a <code>+14°F</code> summer #2 sample.
+                            The curve was normalized to the neat-fuel endpoints before fitting, so using
+                            it with a +14°F summer #2 endpoint is an empirical extrapolation rather than
+                            a direct laboratory test of that exact fuel pair.
+                        </li>
+
+                        <li>
+                            <strong>Cold-flow dose:</strong><br>
+                            When cold flow is enabled, the required additive amount is calculated
+                            from the total gallons after blending:
+                            <br>
+                            <code>
+                                Cold-flow ounces =
+                                total gallons × dose in oz per 100 gal ÷ 100
+                            </code>.
+                        </li>
+
+                        <li>
+                            <strong>Cold-flow effect:</strong><br>
+                            The entered cold-flow effect is based on the default dose of
+                            <code>16 oz per 100 gal</code>. If the dose is changed, the assumed
+                            temperature improvement is scaled proportionally:
+                            <br>
+                            <code>
+                                Applied effect =
+                                entered effect × entered dose ÷ 16
+                            </code>.
+                            This adjustment is applied to estimated operability, not to the
+                            estimated cloud point.
+                        </li>
+
+                        <li>
+                            <strong>Estimated operability:</strong><br>
+                            When cold flow is enabled, operability is estimated by subtracting
+                            the applied cold-flow effect from the estimated cloud point:
+                            <br>
+                            <code>
+                                Operability = cloud point − applied cold-flow effect
+                            </code>.
+                            When cold flow is disabled, estimated operability equals the
+                            estimated cloud point. This is a planning estimate of usable
+                            low-temperature performance and is not a measured or standardized CFPP result.
+                        </li>
+
+                        <li>
+                            <strong>Data basis:</strong><br>
+                            The nonlinear curve is based on petroleum-diesel blend behavior reported
+                            in Minnesota state cold-weather testing and Iowa/Upper Midwest fuel-testing
+                            work. Those datasets showed that a 50/50 #1/#2 blend does not fall halfway
+                            between the neat #1 and neat #2 cloud points, and that the cloud-point drop
+                            becomes steeper as #1 becomes the dominant part of the blend.
+                        </li>
+                    </ul>
+
+                    <p class="model-disclaimer">
+                        <strong>Important:</strong> These calculations are simplified estimates provided
+                        for general informational and planning purposes only. They are not laboratory
+                        results, engineering specifications, professional advice, or a guarantee of fuel
+                        performance, cold-weather operability, equipment protection, or suitability for
+                        any particular application.
+                    </p>
+
+                    <p class="model-disclaimer">
+                        Actual results may vary materially based on fuel composition, supplier
+                        specifications, seasonal formulation, storage conditions, temperature,
+                        contamination, water content, additive compatibility, additive concentration
+                        and mixing, equipment design, filter condition, and other factors not evaluated
+                        by this calculator.
+                    </p>
+
+                    <p class="model-disclaimer">
+                        Do not rely on these estimates as the sole basis for purchasing, blending,
+                        treating, storing, or operating with fuel. Verify fuel and additive specifications
+                        with the applicable suppliers, follow all product instructions and safety
+                        requirements, and use appropriate testing and professional judgment before making
+                        operational decisions.
+                    </p>
+
+                    <p class="model-disclaimer">
+                        To the fullest extent permitted by applicable law, this calculator and its results
+                        are provided “as is” without warranties of accuracy, completeness, merchantability,
+                        fitness for a particular purpose, or particular performance. The calculator’s owner
+                        and operator are not responsible for losses, damages, equipment problems, fuel
+                        problems, downtime, or other consequences arising from use of or reliance on these
+                        estimates.
+                    </p>
+                </div>
+            </details>
+        </div>
+        <footer class="site-footer">
+            Calculations and results are provided subject to the model details and assumptions.<br>
+            &copy; 2026 Dan Michel. Licensed under PolyForm Noncommercial 1.0.0.
+        </footer>
+    </div>
+
+    <script>
+        const CF_DROP = 12;
+        const CF_BASE_DOSE = 16;
+
+        // Core utilities
+        function clamp(v, min, max) {
+            return Math.min(max, Math.max(min, v));
+        }
+
+        function numOrDefault(id, fallback) {
+            const el = document.getElementById(id);
+            if (!el || el.value.trim() === "") return fallback;
+
+            const value = Number(el.value);
+            return Number.isFinite(value) ? value : fallback;
+        }
+
+        // Empirical #1/#2 cloud-point blend model.
+        // x is the #1 fraction from 0.0 to 1.0.
+        // The rounded cubic is based on normalized Minnesota/Iowa blend-test data.
+        function blendCurveFactor(frac1) {
+            const x = clamp(frac1, 0, 1);
+            return (0.6 * x) - (0.8 * x * x) + (1.2 * x * x * x);
+        }
+
+        function computeBlendCP(frac1, cp1, cp2) {
+            const factor = blendCurveFactor(frac1);
+            return cp2 + (cp1 - cp2) * factor;
+        }
+
+        // Formatting helpers
+        function fmtGallons(x) {
+            if (!Number.isFinite(x)) return "–";
+            const ax = Math.abs(x);
+            if (ax < 0.01) return "0";
+            if (ax < 10) return x.toFixed(3);
+            return x.toFixed(2);
+        }
+
+        function fmtTempF(x) {
+            if (!Number.isFinite(x)) return "–";
+            return x.toFixed(1) + " °F";
+        }
+
+
+
+        function fmtOz(x) {
+            if (!Number.isFinite(x) || x < 0) return "–";
+            const ax = Math.abs(x);
+            if (ax < 0.01) return "0 oz";
+            if (ax < 10) return x.toFixed(2) + " oz";
+            return x.toFixed(1) + " oz";
+        }
+
+        // Slider labels and cloud-point helpers
+        function updateHeelSliderLabels() {
+            const slider = document.getElementById("c1-heel2pct");
+            const heel1El = document.getElementById("c1-heel1pct-label");
+            const heel2El = document.getElementById("c1-heel2pct-label");
+            if (!slider || !heel1El || !heel2El) return;
+
+            const heel2 = clamp(Number(slider.value) || 0, 0, 100);
+            const heel1 = 100 - heel2;
+
+            heel1El.textContent = heel1.toFixed(0) + "%";
+            heel2El.textContent = heel2.toFixed(0) + "%";
+        }
+
+        function updateDesiredSliderLabels() {
+            const slider = document.getElementById("c2-desired2");
+            const lab1 = document.getElementById("c2-desired1pct-label");
+            const lab2 = document.getElementById("c2-desired2pct-label");
+            if (!slider || !lab1 || !lab2) return;
+
+            const pct2 = clamp(Number(slider.value) || 0, 1, 99);
+            const pct1 = 100 - pct2;
+
+            lab1.textContent = pct1 + "%";
+            lab2.textContent = pct2 + "%";
+        }
+
+        // Heel CP uses the same nonlinear model as the projected/final blend.
+        function computeHeelCP(heelFrac1) {
+            const cp1 = numOrDefault("c1-heel-cp1", -55); // #1 CP default
+            const cp2 = numOrDefault("c1-heel-cp2", 14); // summer #2 CP default
+            return computeBlendCP(heelFrac1, cp1, cp2);
+        }
+
+        function updateHeelCurrentCP(heelFrac1) {
+            const outEl = document.getElementById("c1-heel-cp-current");
+            if (!outEl) return;
+
+            const heelCP = computeHeelCP(heelFrac1);
+            outEl.textContent = fmtTempF(heelCP);
+        }
+
+        // Slider adjustment and repeat-arrow behavior
+        function adjustSlider(sliderId, deltaSteps) {
+            const slider = document.getElementById(sliderId);
+            if (!slider) return;
+
+            const step = Number(slider.step) || 1;
+            const min = Number.isFinite(Number(slider.min)) ? Number(slider.min) : 0;
+            const max = Number.isFinite(Number(slider.max)) ? Number(slider.max) : 100;
+
+            let val = Number(slider.value);
+            if (!Number.isFinite(val)) val = min;
+
+            val += deltaSteps * step;
+            val = clamp(val, min, max);
+
+            slider.value = val;
+
+            // Trigger the same logic as if user dragged the slider
+            slider.dispatchEvent(new Event("input", {
+                bubbles: true
+            }));
+            slider.dispatchEvent(new Event("change", {
+                bubbles: true
+            }));
+        }
+
+        function attachRepeatArrow(buttonId, sliderId, deltaSteps) {
+            const btn = document.getElementById(buttonId);
+            if (!btn) return;
+
+            let holdTimer = null;
+            let repeatTimer = null;
+            let didHold = false;
+
+            const HOLD_DELAY = 350; // ms before repeat starts
+            const REPEAT_MS = 70; // repeat speed
+
+            function clearTimers() {
+                if (holdTimer) {
+                    clearTimeout(holdTimer);
+                    holdTimer = null;
+                }
+                if (repeatTimer) {
+                    clearInterval(repeatTimer);
+                    repeatTimer = null;
+                }
+            }
+
+            function startRepeat() {
+                didHold = true;
+                adjustSlider(sliderId, deltaSteps); // first step when hold kicks in
+                repeatTimer = setInterval(() => {
+                    adjustSlider(sliderId, deltaSteps); // keep stepping while held
+                }, REPEAT_MS);
+            }
+
+            btn.addEventListener("pointerdown", (e) => {
+                // Only react to primary button / touch
+                if (e.button !== 0) return;
+
+                didHold = false;
+                clearTimers();
+                holdTimer = setTimeout(startRepeat, HOLD_DELAY);
+            });
+
+            btn.addEventListener("pointerup", () => {
+                clearTimers();
+            });
+
+            btn.addEventListener("pointerleave", () => {
+                clearTimers();
+            });
+
+            // Simple click: 1 step, unless we already did a hold
+            btn.addEventListener("click", (e) => {
+                if (didHold) {
+                    e.preventDefault();
+                    return;
+                }
+                adjustSlider(sliderId, deltaSteps);
+            });
+        }
+
+        // Output helpers
+        function clearCalc2Outputs() {
+            document.getElementById("c2-out-gal1").textContent = "–";
+            document.getElementById("c2-out-total1").textContent = "–";
+
+            const cap = document.getElementById("c2-out-cap1");
+            cap.textContent = "–";
+            cap.className = "text-normal";
+
+            document.getElementById("c2-out-cp").textContent = "–";
+            document.getElementById("c2-out-op").textContent = "–";
+
+            const cfOutOzEl = document.getElementById("c2-out-cf-oz");
+            if (cfOutOzEl) cfOutOzEl.textContent = "–";
+        }
+
+        function setOpNote(text, colorVar, align) {
+            const opNoteEl = document.getElementById("c2-out-op-note");
+            opNoteEl.textContent = text;
+            opNoteEl.style.color = colorVar ? `var(${colorVar})` : "inherit";
+            opNoteEl.style.textAlign = align || "left";
+        }
+
+        function setBlendRangeNotes(isOutOfRange) {
+            const currentNoteEl = document.getElementById("c1-heel-cp-note");
+            const projectedNoteEl = document.getElementById("c2-projected-cp-note");
+
+            if (isOutOfRange) {
+                const warning =
+                    "Blend target is out of range — adjust mix sliders or tank values.";
+
+                if (currentNoteEl) {
+                    currentNoteEl.textContent = warning;
+                    currentNoteEl.classList.add("warn-color");
+                }
+
+                if (projectedNoteEl) {
+                    projectedNoteEl.textContent = warning;
+                    projectedNoteEl.classList.add("warn-color");
+                }
+            } else {
+                if (currentNoteEl) {
+                    currentNoteEl.textContent =
+                        "Estimated cloud point uses the nonlinear blend model and mix ratio slider.";
+                    currentNoteEl.classList.remove("warn-color");
+                }
+
+                if (projectedNoteEl) {
+                    projectedNoteEl.textContent =
+                        "Projected cloud point uses the nonlinear blend model and mix ratio slider.";
+                    projectedNoteEl.classList.remove("warn-color");
+                }
+            }
+        }
+
+
+        // ==============================
+        // MAIN CALCULATION ROUTINE
+        // ==============================
+        function updateCalc2() {
+            // ----- Grab DOM elements -----
+            const tankSizeEl = document.getElementById("c1-tankSize");
+            const heelTotalEl = document.getElementById("c1-heel2");
+            const heelSlider = document.getElementById("c1-heel2pct");
+            const desiredSlider = document.getElementById("c2-desired2");
+            const cfCheckbox = document.getElementById("c2-cf");
+            const cfBlock = document.getElementById("c2-cf-block");
+
+            const warnHeelEl = document.getElementById("tank-warning-heel");
+            const warnSizeEl = document.getElementById("tank-warning-size");
+
+            const outGal1El = document.getElementById("c2-out-gal1");
+            const outTotal1El = document.getElementById("c2-out-total1");
+            const capEl1 = document.getElementById("c2-out-cap1");
+            const outCpEl = document.getElementById("c2-out-cp");
+            const outOpEl = document.getElementById("c2-out-op");
+            const projectedCpEl = document.getElementById("c2-projected-cp");
+            const projectedOpEl = document.getElementById("c2-projected-op");
+
+            const cfDoseEl = document.getElementById("c2-cf-dose");
+            const cfOutOzEl = document.getElementById("c2-out-cf-oz");
+
+            // ----- Raw numeric inputs -----
+            const tankSize = Number(tankSizeEl.value) || 0;
+            const heelRaw = heelTotalEl.value.trim();
+            const heelBlank = heelRaw === "";
+            const heelTotal = heelBlank ? 0 : (Number(heelRaw) || 0);
+            const desired2Pct = Number(desiredSlider.value) || 70;
+            const coldFlowEnabled = cfCheckbox.checked;
+
+            // Show/hide cold-flow outputs
+            if (cfBlock) {
+                cfBlock.hidden = !coldFlowEnabled;
+            }
+
+            // Current mix slider value
+            let heel2Pct = Number(heelSlider.value);
+            if (!Number.isFinite(heel2Pct)) heel2Pct = 100;
+            heel2Pct = clamp(heel2Pct, 0, 100);
+
+            // ==============================
+            // INPUT WARNINGS (HEEL / SIZE)
+            // ==============================
+            if (!heelBlank && heelTotal <= 0) {
+                // Error tied to "Current Gallons in Tank"
+                if (warnHeelEl) {
+                    warnHeelEl.textContent = "Current gallons must be greater than 0.";
+                }
+                if (warnSizeEl) {
+                    warnSizeEl.textContent = "";
+                }
+
+            } else if (tankSize > 0 && heelTotal >= tankSize) {
+                // Error tied to "Tank Size in Gallons"
+                if (warnSizeEl) {
+                    warnSizeEl.textContent =
+                        "Tank size should be greater than the current gallons.";
+                }
+                if (warnHeelEl) {
+                    warnHeelEl.textContent = "";
+                }
+
+            } else {
+                // No warnings
+                if (warnHeelEl) warnHeelEl.textContent = "";
+                if (warnSizeEl) warnSizeEl.textContent = "";
+            }
+
+            // ==============================
+            // FRACTIONS, SLIDERS, AND HEEL CP
+            // ==============================
+            // Desired target fractions
+            updateDesiredSliderLabels();
+            const frac2 = desired2Pct / 100; // target #2 fraction
+            const frac1 = 1 - frac2; // target #1 fraction
+
+            const projectedCP1 = numOrDefault("c2-fuel-cp1", -55);
+            const projectedCP2 = numOrDefault("c1-heel-cp2", 14);
+            const projectedCP = computeBlendCP(frac1, projectedCP1, projectedCP2);
+
+            /* Apply the selected cold-flow effect to projected operability */
+            let projectedCfDrop = 0;
+
+            if (coldFlowEnabled) {
+                const projectedEffect = numOrDefault("c2-cf-effect", CF_DROP);
+
+                let projectedDose = Number(cfDoseEl.value);
+                if (!Number.isFinite(projectedDose) || projectedDose <= 0) {
+                    projectedDose = CF_BASE_DOSE;
+                }
+
+                projectedCfDrop =
+                    projectedEffect * (projectedDose / CF_BASE_DOSE);
+            }
+
+            const projectedOp = projectedCP - projectedCfDrop;
+
+            if (projectedCpEl) {
+                projectedCpEl.textContent = fmtTempF(projectedCP);
+            }
+
+            if (projectedOpEl) {
+                projectedOpEl.textContent = fmtTempF(projectedOp);
+            }
+
+            // Current heel fractions
+            updateHeelSliderLabels();
+            const heelFrac2 = heel2Pct / 100;
+            const heelFrac1 = 1 - heelFrac2;
+
+            // Heel cloud point
+            updateHeelCurrentCP(heelFrac1);
+            setBlendRangeNotes(false);
+
+            // Heel #2 gallons and total
+            const h2 = heelTotal * heelFrac2;
+            const H = heelTotal;
+
+            // ==============================
+            // EARLY EXIT WHEN NO HEEL
+            // ==============================
+            if (heelTotal <= 0) {
+                clearCalc2Outputs();
+
+                if (coldFlowEnabled) {
+                    setOpNote(
+                        `Cold flow treatment assumed to improve operability by ${projectedCfDrop.toFixed(1)}°F compared to cloud point.`,
+                        "--text",
+                        "left"
+                    );
+                } else {
+                    setOpNote(
+                        "No cold-flow adjustment applied (operability = cloud point).",
+                        "--text",
+                        "left"
+                    );
+                }
+
+                if (cfOutOzEl) cfOutOzEl.textContent = "–";
+
+                if (!tankSize || tankSize <= 0) {
+                    capEl1.textContent = "–";
+                    capEl1.className = "text-normal";
+                } else {
+                    const remaining = tankSize;
+                    capEl1.textContent = fmtGallons(remaining);
+                    capEl1.className = "text-ok";
+                }
+                return;
+            }
+
+            // ==============================
+            // REQUIRED #1 GALLONS
+            // ==============================
+            let gal1Needed = NaN;
+
+            if (frac2 > 0) {
+                gal1Needed = (h2 - frac2 * H) / frac2;
+            }
+
+            let feasibleA = Number.isFinite(gal1Needed) && gal1Needed >= -1e-9;
+            if (feasibleA && gal1Needed < 0) gal1Needed = 0;
+
+            const totalAfter1 = feasibleA ? H + gal1Needed : NaN;
+
+            outGal1El.textContent = feasibleA ? fmtGallons(gal1Needed) : "–";
+            outTotal1El.textContent = feasibleA ? fmtGallons(totalAfter1) : "–";
+
+            // ==============================
+            // COLD-FLOW OZ NEEDED
+            // ==============================
+            if (cfOutOzEl) {
+                if (feasibleA && totalAfter1 > 0) {
+                    // Use the same dose logic as for cfDrop: fall back to CF_BASE_DOSE if blank/zero
+                    let doseVal = Number(cfDoseEl.value);
+                    if (!Number.isFinite(doseVal) || doseVal <= 0) {
+                        doseVal = CF_BASE_DOSE;
+                    }
+
+                    const cfOz = totalAfter1 * (doseVal / 100); // oz/100 gal × total gallons
+                    cfOutOzEl.textContent = fmtOz(cfOz);
+                } else {
+                    cfOutOzEl.textContent = "–";
+                }
+            }
+
+            // ==============================
+            // CAPACITY CHECK
+            // ==============================
+            if (!tankSize || tankSize <= 0 || !feasibleA) {
+                capEl1.textContent = "–";
+                capEl1.className = "text-normal";
+            } else if (totalAfter1 > tankSize) {
+                capEl1.textContent = "Over Capacity";
+                capEl1.className = "text-error";
+            } else {
+                const remaining1 = tankSize - totalAfter1;
+                capEl1.textContent = fmtGallons(remaining1);
+                capEl1.className = "text-ok";
+            }
+
+            // ==============================
+            // BLEND FRACTIONS + CLOUD POINT
+            // ==============================
+
+            let cp;
+            if (feasibleA && (H + gal1Needed) > 0) {
+                const heelCp1 = numOrDefault("c1-heel-cp1", -55);
+                const addedCp1 = numOrDefault("c2-fuel-cp1", -55);
+                const cp2 = numOrDefault("c1-heel-cp2", 14);
+
+                const heel1Gallons = H * heelFrac1;
+                const total1Gallons = heel1Gallons + gal1Needed;
+                const finalTotal = H + gal1Needed;
+                const finalFrac1 = total1Gallons / finalTotal;
+
+                // If existing #1 and added #1 use different advanced CP values,
+                // combine those #1 endpoints by volume before applying the blend curve.
+                const effectiveCp1 = total1Gallons > 0
+                    ? ((heelCp1 * heel1Gallons) + (addedCp1 * gal1Needed)) / total1Gallons
+                    : addedCp1;
+
+                cp = computeBlendCP(finalFrac1, effectiveCp1, cp2);
+            } else {
+                cp = computeHeelCP(heelFrac1);
+            }
+
+            // ==============================
+            // COLD-FLOW DROP + OPERABILITY
+            // ==============================
+            let cfDrop = 0;
+            if (coldFlowEnabled) {
+                const baseEffect = numOrDefault("c2-cf-effect", CF_DROP);
+                let dose = Number(cfDoseEl.value);
+                if (!Number.isFinite(dose) || dose <= 0) dose = CF_BASE_DOSE;
+
+                cfDrop = baseEffect * (dose / CF_BASE_DOSE);
+            }
+
+            const op = cp - cfDrop;
+
+            // ==============================
+            // FEASIBILITY CHECK + NOTES
+            // ==============================
+            if (!feasibleA) {
+                outCpEl.textContent = "–";
+                outOpEl.textContent = "–";
+
+                setBlendRangeNotes(true);
+
+                if (coldFlowEnabled) {
+                    setOpNote(
+                        `Cold flow treatment assumed to improve operability by ${cfDrop.toFixed(1)}°F compared to cloud point.`,
+                        "--text",
+                        "left"
+                    );
+                } else {
+                    setOpNote(
+                        "No cold-flow adjustment applied (operability = cloud point).",
+                        "--text",
+                        "left"
+                    );
+                }
+
+                return;
+            }
+
+            outCpEl.textContent = fmtTempF(cp);
+            outOpEl.textContent = fmtTempF(op);
+
+            if (coldFlowEnabled) {
+                setOpNote(
+                    `Cold flow treatment assumed to improve operability by ${cfDrop.toFixed(1)}°F compared to cloud point.`,
+                    "--text",
+                    "left"
+                );
+            } else {
+                setOpNote(
+                    "No cold-flow adjustment applied (operability = cloud point).",
+                    "--text",
+                    "left"
+                );
+            }
+        }
+
+        // ==============================
+        // EVENT WIRING — INPUT HANDLERS
+        // ==============================
+        [
+            "c1-tankSize", "c1-heel2", "c1-heel2pct",
+            "c1-heel-cp1", "c1-heel-cp2", "c2-desired2",
+            "c2-fuel-cp1", "c2-cf",
+            "c2-cf-dose", "c2-cf-effect"
+        ].forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener("input", updateCalc2);
+            el.addEventListener("change", updateCalc2);
+        });
+
+        // ==============================
+        // ADVANCED TOGGLE HANDLERS
+        // ==============================
+        const adv1Toggle = document.getElementById("c1-advanced-toggle");
+        const adv1Block = document.getElementById("c1-adv-block");
+        const adv2Toggle = document.getElementById("c2-advanced-toggle");
+        const adv2Block = document.getElementById("c2-adv-block");
+
+        function wireAdvancedToggle(toggle, panel) {
+            if (!toggle || !panel) return;
+
+            toggle.addEventListener("click", () => {
+                const willOpen = panel.hidden;
+                panel.hidden = !willOpen;
+                toggle.textContent = willOpen ?
+                    "Hide advanced settings" :
+                    "Advanced settings";
+                toggle.setAttribute("aria-expanded", String(willOpen));
+            });
+        }
+
+        wireAdvancedToggle(adv1Toggle, adv1Block);
+        wireAdvancedToggle(adv2Toggle, adv2Block);
+
+        // ==============================
+        // SLIDER ARROW SETUP
+        // ==============================
+        attachRepeatArrow("c1-heel-dec", "c1-heel2pct", -1);
+        attachRepeatArrow("c1-heel-inc", "c1-heel2pct", 1);
+        attachRepeatArrow("c2-desired-dec", "c2-desired2", -1);
+        attachRepeatArrow("c2-desired-inc", "c2-desired2", 1);
+
+        // Remove focus outline after click/press
+        document.querySelectorAll(".slider-arrow")
+            .forEach(btn => {
+                btn.addEventListener("mouseup", e => e.target.blur());
+                btn.addEventListener("mouseleave", e => e.target.blur());
+            });
+
+        // ==============================
+        // MISC CONTROL BEHAVIOR
+        // ==============================
+
+        // Reset tank button
+        document.getElementById("reset-tank").addEventListener("click", () => {
+            document.getElementById("c1-tankSize").value = "";
+            document.getElementById("c1-heel2").value = "";
+            document.getElementById("c1-heel2pct").value = 100;
+            updateCalc2();
+        });
+
+        // ==============================
+        // INITIALIZATION
+        // ==============================
+        clearCalc2Outputs();
+        updateHeelSliderLabels();
+        updateDesiredSliderLabels();
+        updateCalc2();
+    </script>
+
+
+</body>
+
+</html>
